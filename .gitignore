@@ -1,0 +1,5 @@
+bin/*
+lib/*
+lib64/*
+lib64
+src/*.egg-info
