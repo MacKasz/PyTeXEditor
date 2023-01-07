@@ -1,12 +1,8 @@
-from TextEdit import TextEdit
-from Sidebar import Sidebar
-from Ribbon import Ribbon
+from PyTeXEditor.TextEdit import TextEdit
+from PyTeXEditor.Sidebar import Sidebar
+from PyTeXEditor.Ribbon import Ribbon
 from PyQt6 import QtWidgets, QtGui
-from PyQt6.QtCore import pyqtSlot
 
-
-def test():
-    print("test")
 
 class Window(QtWidgets.QWidget):
 
@@ -22,11 +18,9 @@ class Window(QtWidgets.QWidget):
         vertical_split.addWidget(self.ribbon)
         vertical_split.setObjectName("VerticalSplit")
 
-        self.hide = False
-
         self.sidebar = Sidebar()
         self.textedit = TextEdit()
-        self.textedit.hide_signal[bool].connect(test)
+        self.textedit.sidebar_visable_signal.connect(self.hide_sidebar)
 
         horizontal_split = QtWidgets.QHBoxLayout()
         horizontal_split.addWidget(self.sidebar)
@@ -40,6 +34,5 @@ class Window(QtWidgets.QWidget):
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
         return super().resizeEvent(a0)
 
-    @pyqtSlot(bool)
-    def hide_sidebar():
-        print("a")
+    def hide_sidebar(self):
+        self.sidebar.setVisible(False)
