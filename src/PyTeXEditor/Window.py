@@ -3,7 +3,6 @@ from PyQt6 import QtWidgets
 
 
 class Window(QtWidgets.QWidget):
-
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.setObjectName("MainWindow")
@@ -28,7 +27,7 @@ class Window(QtWidgets.QWidget):
         self.setLayout(vertical_split)
 
         self.setGeometry(0, 0, 500, 300)
-        self.setWindowTitle('PyTeXEditor')
+        self.setWindowTitle("PyTeXEditor")
 
     def hide_sidebar(self):
         self.sidebar.setVisible(False)
