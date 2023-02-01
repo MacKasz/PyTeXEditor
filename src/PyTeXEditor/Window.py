@@ -10,21 +10,30 @@ class Window(QtWidgets.QWidget):
         self.show()
 
     def ui_init(self) -> None:
+        outer_vsplit = QtWidgets.QVBoxLayout()
         vertical_split = QtWidgets.QVBoxLayout()
-        self.ribbon = PyTeXEditor.Ribbon()
-        vertical_split.addWidget(self.ribbon)
-        vertical_split.setObjectName("VerticalSplit")
+        horizontal_split = QtWidgets.QHBoxLayout()
 
+        self.menubar = PyTeXEditor.Menubar()
+        self.ribbon = PyTeXEditor.Ribbon()
         self.sidebar = PyTeXEditor.Sidebar()
         self.textedit = PyTeXEditor.TextEdit()
+
         self.textedit.sidebar_visable_signal.connect(self.hide_sidebar)
 
-        horizontal_split = QtWidgets.QHBoxLayout()
-        horizontal_split.setObjectName("HorizontalSplit")
+        horizontal_split.setObjectName("HSplit")
         horizontal_split.addWidget(self.sidebar)
         horizontal_split.addWidget(self.textedit)
+
+        vertical_split.setObjectName("InnerVSplit")
+        vertical_split.addWidget(self.ribbon)
         vertical_split.addLayout(horizontal_split)
-        self.setLayout(vertical_split)
+
+        outer_vsplit.setObjectName("OuterVSplit")
+        outer_vsplit.addWidget(self.menubar)
+        outer_vsplit.addLayout(vertical_split)
+
+        self.setLayout(outer_vsplit)
 
         self.setGeometry(0, 0, 500, 300)
         self.setWindowTitle("PyTeXEditor")
