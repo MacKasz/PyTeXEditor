@@ -7,6 +7,7 @@ def test_object_name(qtbot):
     menu = Menubar()
     assert menu.objectName() == "Menubar"
 
+
 def test_menu_items(qtbot):
     menu = Menubar()
     menu_items = menu.children()[1:]
