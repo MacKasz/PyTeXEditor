@@ -3,10 +3,6 @@ from PyTeXEditor.TextEdit import TextEdit
 from PyTeXEditor.Sidebar import Sidebar
 
 
-def test_sanity():
-    print("Run")
-
-
 def test_send_hide(qtbot):
     """Check if signals are sent from the textedit
     """

@@ -14,20 +14,26 @@ def test_window_name(qtbot):
 
 def test_window_layout(qtbot):
     main_window = PyTeXEditor.Window()
+    first = main_window.layout()
+    second = first.children()[0]
+    third = second.children()[0]
 
-    assert main_window.layout().objectName() == "VerticalSplit"
-    assert type(main_window.layout()) is QtWidgets.QVBoxLayout
+    assert type(first) is QtWidgets.QVBoxLayout
+    assert first.objectName() == "OuterVSplit"
+    assert type(first.itemAt(0).widget()) is PyTeXEditor.Menubar
+    assert first.itemAt(0).widget().objectName() == "Menubar"
 
-    assert main_window.layout().itemAt(0).widget().objectName() == "Ribbon"
-    assert type(main_window.layout().itemAt(0).widget()) is PyTeXEditor.Ribbon
+    assert type(second) is QtWidgets.QVBoxLayout
+    assert second.objectName() == "InnerVSplit"
+    assert type(second.itemAt(0).widget()) is PyTeXEditor.Ribbon
+    assert second.itemAt(0).widget().objectName() == "Ribbon"
 
-    assert main_window.layout().children()[0].objectName() == "HorizontalSplit"
-    assert type(main_window.layout().children()[0]) is QtWidgets.QHBoxLayout
-
-    assert main_window.layout().children()[0]\
-        .itemAt(0).widget().objectName() == "Sidebar"
-    assert type(main_window.layout().children()[0].itemAt(0).widget())\
-        is PyTeXEditor.Sidebar
+    assert type(third) is QtWidgets.QHBoxLayout
+    assert third.objectName() == "HSplit"
+    assert type(third.itemAt(0).widget()) is PyTeXEditor.Sidebar
+    assert third.itemAt(0).widget().objectName() == "Sidebar"
+    assert type(third.itemAt(1).widget()) is PyTeXEditor.TextEdit
+    assert third.itemAt(1).widget().objectName() == "TextEdit"
 
 
 def test_hide_sidebar(qtbot):
