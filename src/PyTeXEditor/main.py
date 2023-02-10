@@ -1,4 +1,4 @@
-from PyTeXEditor import Window
+from PyTeXEditor.GuiElements import Window
 from PyQt6.QtWidgets import QApplication
 import sys
 

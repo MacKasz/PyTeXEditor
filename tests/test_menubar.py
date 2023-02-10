@@ -1,6 +1,6 @@
 import pytest # noqa F401
 from PyQt6 import QtWidgets
-from PyTeXEditor import Menubar
+from PyTeXEditor.GuiElements import Menubar
 
 
 def test_object_name(qtbot):
