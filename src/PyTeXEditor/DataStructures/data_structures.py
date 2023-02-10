@@ -5,7 +5,7 @@ T = TypeVar("T")
 
 
 class Node(Generic[T]):
-    __slots__ = ("id", "type", "data", "children")
+    __slots__ = ("id", "data", "children")
 
     def __init__(self, id: int, data: T) -> None:
         self.id = id
@@ -43,15 +43,4 @@ class Tree(Generic[U]):
         while nodes_stack:
             current_node = nodes_stack.pop(0)
             nodes_stack = current_node.children + nodes_stack
-            yield current_node
-
-    def postorder_traverse(self) -> Generator[Node[U], None, None]:
-        if not self.root:
-            return None
-
-        nodes_stack: list[Node[U]] = [self.root]
-
-        while nodes_stack:
-            current_node = nodes_stack.pop(0)
-            nodes_stack = nodes_stack + current_node.children
             yield current_node
