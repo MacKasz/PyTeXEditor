@@ -1,36 +1,22 @@
-from typing import Pattern
 import re
 
 
-keyword_patterns: list[Pattern[str]] = [
-    re.compile(r"(\\begin\{[a-zA-Z0-9]+\}(?:\[.*\])*)\s?"),
-    re.compile(r"(\\end\{[a-zA-Z0-9]+\})\s?"),
-    re.compile(r"(\\(?!begin)(?!end)(?:[a-z]*)(?:\[.*\])*(?:\{.*\})*)\s?"),
-]
+# regex = re.compile(r"((?!\\n)\\\w*(?:\[\w*\])*(?:\{\w*\})*)")
+regex = re.compile(r"((?!\\n)\\\w*(?:\[\w*\])*(?:\{.*\})*(?:\s*\n?)*)")
 
 
 def delete_comments(line: str) -> str:
     return line.split("%")[0]
 
 
-def seperate(line: str) -> list[str]:
-    output = [line]
-    for regex in keyword_patterns:
-        working: list[str] = []
-        for word in output:
-            working += regex.split(word)
-            working = list(filter(None, working))
-        output = working
+def seperate(lines: list[str]) -> list[str]:
+    # output = re.split(r"(\\[\w\s\[\]\{\}]*)", " ".join(lines))
+    output = regex.split(" ".join(lines))
+
+    i = 0
+    while i < len(output):
+        output[i] = delete_comments(output[i])
+        i += 1
+    output = list(filter(lambda x: x != "\n", output))
 
     return list(filter(None, output))
-
-
-if __name__ == "__main__":
-    text = r"""
-    \begin{environ}[option] asd
-    \begin{itemize}
-        \item asd
-        \item asd
-    \end{itemize}
-    """
-    print(seperate(text))

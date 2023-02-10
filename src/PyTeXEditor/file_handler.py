@@ -1,5 +1,7 @@
 from pathlib import Path
 from os import access, linesep, R_OK, W_OK
+from latex_document import LatexDocument
+import logging
 
 
 class FileHandler:
@@ -7,27 +9,9 @@ class FileHandler:
 
         self.file_created = False
         self.file_path = self.__resolve_file(file_path)
+        self.doc = LatexDocument()
 
     def __resolve_file(self, input_path: Path) -> Path:
-        """Resolves the given path
-
-        Parameters
-        ----------
-        input_path : Path
-            _description_
-
-        Returns
-        -------
-        Path
-            _description_
-
-        Raises
-        ------
-        IsADirectoryError
-            _description_
-        ValueError
-            _description_
-        """
         # Resolve path
         output_path = input_path.absolute()
 
@@ -48,9 +32,13 @@ class FileHandler:
 
         return output_path
 
-    def __read_file(self) -> list[str]:
+    def read_file(self) -> None:
         with open(self.file_path, "r") as file:
-            return file.readlines()
+            lines = file.readlines()
+        self.doc.plain_text = lines
+
+    def convert(self) -> None:
+        self.doc.plain_to_tex()
 
     def __write_file(self, data: list[str]) -> None:
         data = [line + linesep for line in data]
@@ -60,5 +48,10 @@ class FileHandler:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     # a = FileHandler("/home/maciej/unreadable")
-    b = FileHandler(Path("/home/maciej/a/readable2"))
+    b = FileHandler(Path("/mnt/Media/Dev/PyTeXEditor/resources/a.tex"))
+    b.read_file()
+    b.convert()
+    for node in b.doc.object_tree.preorder_traverse():
+        print(f"{type(node.data)}: s'{node.data.data}'e")

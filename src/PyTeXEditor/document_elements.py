@@ -21,6 +21,11 @@ class Block(ABC):
 
     def __init__(self) -> None:
         self.options: Dict[str, str] = dict()
+        self.data = ""
+
+    @abstractmethod
+    def starter(self) -> Pattern[str]:
+        pass
 
     @abstractmethod
     def terminator(self) -> Pattern[str]:
@@ -62,6 +67,8 @@ class NonTerminalMacro(Block):
 
 
 class Document(Environment):
+    def starter(self) -> Pattern[str]:
+        return re.compile(r"\\begin\{document\}")
 
     def terminator(self) -> Pattern[str]:
         return re.compile(r"\\end\{document\}")
@@ -74,9 +81,11 @@ class Document(Environment):
 
 
 class Itemize(Environment):
-
     def __init__(self) -> None:
         super().__init__()
+
+    def starter(self) -> Pattern[str]:
+        return re.compile(r"\\begin\{itemize\}")
 
     def terminator(self) -> Pattern[str]:
         return re.compile(r"\\end\{itemize\}")
@@ -89,9 +98,11 @@ class Itemize(Environment):
 
 
 class Item(TerminalMacro):
-
     def __init__(self) -> None:
         super().__init__()
+
+    def starter(self) -> Pattern[str]:
+        return re.compile(r"\\item")
 
     def terminator(self) -> Pattern[str]:
         return re.compile(r"\\item|\\end\{itemize\}")
@@ -100,11 +111,10 @@ class Item(TerminalMacro):
         return IncludeTerminator.BEFORE
 
     def set_data(self, data: str) -> None:
-        self.data = data
+        pass
 
 
 class Text(TerminalMacro):
-
     def __init__(self) -> None:
         self.data: str = ""
 
@@ -113,6 +123,9 @@ class Text(TerminalMacro):
 
     def to_latex(self) -> str:
         return "test"
+
+    def starter(self) -> Pattern[str]:
+        return re.compile(r"^[^\\]+$")
 
     def terminator(self) -> Pattern[str]:
         return re.compile(r"\\")
