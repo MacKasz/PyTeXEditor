@@ -48,7 +48,7 @@ class LatexDocument:
 
         # Cut to the document
         logging.debug(f"Cutting at {i} (length={len(self.intermediate)})")
-        self.intermediate = self.intermediate[(i + 1) :]
+        self.intermediate = self.intermediate[(i + 1):]
         logging.debug(f"After cutting: length={len(self.intermediate)}")
 
         # Start the node stack
