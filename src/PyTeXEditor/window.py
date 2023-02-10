@@ -1,4 +1,7 @@
-from PyTeXEditor.GuiElements import Menubar, Ribbon, Sidebar, TextEdit
+from PyTeXEditor.menubar import Menubar
+from PyTeXEditor.ribbon import Ribbon
+from PyTeXEditor.sidebar import Sidebar
+from PyTeXEditor.textedit import TextEdit
 from PyQt6 import QtWidgets
 
 

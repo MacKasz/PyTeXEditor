@@ -1,5 +1,5 @@
 import pytest  # noqa F401
-from PyTeXEditor.DataStructures import Node, Tree
+from PyTeXEditor.data_structures import Node, Tree
 
 
 def test_node():

@@ -1,5 +1,6 @@
 import pytest # noqa F401
-from PyTeXEditor.GuiElements import TextEdit, Sidebar
+from PyTeXEditor.textedit import TextEdit
+from PyTeXEditor.sidebar import Sidebar
 
 
 def test_send_hide(qtbot):

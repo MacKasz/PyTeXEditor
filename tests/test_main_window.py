@@ -1,5 +1,9 @@
 import pytest  # noqa F401
-from PyTeXEditor.GuiElements import Window, Menubar, Sidebar, Ribbon, TextEdit
+from PyTeXEditor.window import Window
+from PyTeXEditor.menubar import Menubar
+from PyTeXEditor.ribbon import Ribbon
+from PyTeXEditor.sidebar import Sidebar
+from PyTeXEditor.textedit import TextEdit
 from PyQt6 import QtWidgets
 
 
