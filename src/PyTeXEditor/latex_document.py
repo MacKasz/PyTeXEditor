@@ -48,7 +48,7 @@ class LatexDocument:
 
         # Cut to the document
         logging.debug(f"Cutting at {i} (length={len(self.intermediate)})")
-        self.intermediate = self.intermediate[(i + 1):]
+        self.intermediate = self.intermediate[(i + 1) :]
         logging.debug(f"After cutting: length={len(self.intermediate)}")
 
         # Start the node stack
@@ -74,22 +74,23 @@ class LatexDocument:
                     logging.debug(f"Found terminator {last_terminator}")
                     # Should the current item be included in the data?
 
-                    match (last_node.data.include_type()):
-                        case (IncludeTerminator.BEFORE):
-                            logging.debug(f"setting data {current_data}")
-                            last_node.data.set_data(current_data)
-                            if node_stack:
-                                node_stack.pop()
-                            continue
+                    last_include = last_node.data.include_type()
 
-                        case (IncludeTerminator.INCLUDE):
-                            logging.debug("Include")
-                            current_data += self.intermediate[i]
-                            logging.debug(f"setting data '{current_data}'")
-                            last_node.data.set_data(current_data)
-                            if node_stack:
-                                node_stack.pop()
-                            continue
+                    if last_include == IncludeTerminator.BEFORE:
+                        logging.debug(f"setting data {current_data}")
+                        last_node.data.set_data(current_data)
+                        if node_stack:
+                            node_stack.pop()
+                        continue
+
+                    elif last_include == IncludeTerminator.INCLUDE:
+                        logging.debug("Include")
+                        current_data += self.intermediate[i]
+                        logging.debug(f"setting data '{current_data}'")
+                        last_node.data.set_data(current_data)
+                        if node_stack:
+                            node_stack.pop()
+                        continue
 
             current_data = self.intermediate[i]
 
