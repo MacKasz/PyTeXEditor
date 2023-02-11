@@ -1,6 +1,6 @@
-from extract_latex import seperate
-from data_structures import Tree, Node
-from document_elements import (
+from PyTeXEditor.extract_latex import seperate
+from PyTeXEditor.data_structures import Tree, Node
+from PyTeXEditor.document_elements import (
     Block,
     get_env_regex,
     IncludeTerminator,

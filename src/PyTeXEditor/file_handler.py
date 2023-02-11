@@ -1,6 +1,6 @@
 from pathlib import Path
 from os import access, linesep, R_OK, W_OK
-from latex_document import LatexDocument
+from PyTeXEditor.latex_document import LatexDocument
 import logging
 
 
@@ -50,8 +50,13 @@ class FileHandler:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     # a = FileHandler("/home/maciej/unreadable")
-    b = FileHandler(Path("/mnt/Media/Dev/PyTeXEditor/resources/a.tex"))
+    b = FileHandler(Path("/mnt/Media/Dev/PyTeXEditor/resources/good_document.tex"))
     b.read_file()
     b.convert()
     for node in b.doc.object_tree.preorder_traverse():
         print(f"{type(node.data)}: s'{node.data.data}'e")
+
+
+if __name__ == "__main__":
+    a = FileHandler(Path("/mnt/Media/Dev/PyTeXEditor/resources/linked_document.tex"))
+    print(a.file_path)

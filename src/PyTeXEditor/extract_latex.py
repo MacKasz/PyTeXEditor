@@ -1,7 +1,6 @@
 import re
 
 
-# regex = re.compile(r"((?!\\n)\\\w*(?:\[\w*\])*(?:\{\w*\})*)")
 regex = re.compile(r"((?!\\n)\\\w*(?:\[\w*\])*(?:\{.*\})*(?:\s*\n?)*)")
 
 

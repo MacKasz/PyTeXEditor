@@ -11,6 +11,7 @@ def test_node():
     assert node.data == "node"
     assert node.children == [child_node]
     assert str(node) == "(1, node, (2))"
+    assert node.__repr__() == "(1, node, (2))"
 
 
 def test_tree():
