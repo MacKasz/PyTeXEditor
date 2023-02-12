@@ -8,7 +8,7 @@ class TextEdit(QtWidgets.QTextEdit):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.setObjectName("TextEdit")
+        super().setObjectName("TextEdit")
 
     def hide_sidebar(self) -> None:
         self.sidebar_visable_signal.emit(False)

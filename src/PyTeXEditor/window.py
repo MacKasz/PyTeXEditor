@@ -1,4 +1,7 @@
-import PyTeXEditor
+from PyTeXEditor.menubar import Menubar
+from PyTeXEditor.ribbon import Ribbon
+from PyTeXEditor.sidebar import Sidebar
+from PyTeXEditor.textedit import TextEdit
 from PyQt6 import QtWidgets
 
 
@@ -14,10 +17,10 @@ class Window(QtWidgets.QWidget):
         vertical_split = QtWidgets.QVBoxLayout()
         horizontal_split = QtWidgets.QHBoxLayout()
 
-        self.menubar = PyTeXEditor.Menubar()
-        self.ribbon = PyTeXEditor.Ribbon()
-        self.sidebar = PyTeXEditor.Sidebar()
-        self.textedit = PyTeXEditor.TextEdit()
+        self.menubar = Menubar()
+        self.ribbon = Ribbon()
+        self.sidebar = Sidebar()
+        self.textedit = TextEdit()
 
         self.textedit.sidebar_visable_signal.connect(self.hide_sidebar)
 
