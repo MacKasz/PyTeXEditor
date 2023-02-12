@@ -46,9 +46,8 @@ class Block(ABC):
         for key, value in option_list.items():
             self.options.update({key: value})
 
+    @abstractmethod
     def process_options(self, raw_options: list[str]) -> None:
-        print("process")
-        print(raw_options)
         pass
 
 
@@ -79,6 +78,9 @@ class Document(Environment):
     def set_data(self, data: str) -> None:
         pass
 
+    def process_options(self, raw_options: list[str]) -> None:
+        pass
+
 
 class Itemize(Environment):
     def __init__(self) -> None:
@@ -96,6 +98,9 @@ class Itemize(Environment):
     def set_data(self, data: str) -> None:
         pass
 
+    def process_options(self, raw_options: list[str]) -> None:
+        pass
+
 
 class Item(TerminalMacro):
     def __init__(self) -> None:
@@ -111,6 +116,9 @@ class Item(TerminalMacro):
         return IncludeTerminator.BEFORE
 
     def set_data(self, data: str) -> None:
+        pass
+
+    def process_options(self, raw_options: list[str]) -> None:
         pass
 
 
@@ -135,6 +143,9 @@ class Text(TerminalMacro):
 
     def set_data(self, data: str) -> None:
         self.data = data
+
+    def process_options(self, raw_options: list[str]) -> None:
+        pass
 
 
 ENVIRONMENTS: Dict[str, Type[Block]] = {

@@ -25,7 +25,7 @@ class LatexDocument:
             logging.error("intermediate is empty")
             return None
 
-        document_class = ENVIRONMENTS["document"]
+        document_class = ENVIRONMENTS["document"]  # type: ignore
         doc_begin, _ = get_env_regex("document")
 
         i = 0
@@ -34,9 +34,13 @@ class LatexDocument:
         while len(self.intermediate) > i:
             if doc_begin.match(self.intermediate[i]):
                 # Starts the tree if the document is found
-                root_object = Node[document_class](id_counter, document_class())
+                root_object = Node[document_class](  # type: ignore
+                    id_counter, document_class()
+                )
                 self.object_tree = Tree(root_object)
-                root_object.data.process_options(self.intermediate[:i])
+                root_object.data.process_options(  # type: ignore
+                    self.intermediate[:i]
+                )
                 id_counter += 1
                 break
 
@@ -51,8 +55,8 @@ class LatexDocument:
         self.intermediate = self.intermediate[(i + 1):]
         logging.debug(f"After cutting: length={len(self.intermediate)}")
 
-        # Start the node stack
-        node_stack: list[Node] = [self.object_tree.root]
+        # Start the stack
+        node_stack: list[Node[Block]] = [self.object_tree.root]
 
         i = 0
         current_data = self.intermediate[i]
@@ -97,7 +101,9 @@ class LatexDocument:
             for macro_type, regex in MACROS.items():
                 if regex.match(self.intermediate[i]):
                     logging.debug(f"Element is {macro_type}")
-                    new_node = Node[macro_type](id_counter, macro_type())
+                    new_node = Node[macro_type](  # type: ignore
+                        id_counter, macro_type()
+                    )
                     node_stack[-1].add_child(new_node)
                     node_stack.append(new_node)
                     # Don't add to stack
@@ -106,7 +112,10 @@ class LatexDocument:
                 regex, _ = get_env_regex(env_name)
                 if regex.match(self.intermediate[i]):
                     logging.debug(f"Element is {env_name}")
-                    new_node = Node[env_type](id_counter, env_type())
+                    new_node = Node[env_type](  # type: ignore
+                        id_counter,
+                        env_type()
+                    )
                     node_stack[-1].add_child(new_node)
                     node_stack.append(new_node)
 
