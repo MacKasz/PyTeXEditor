@@ -10,10 +10,12 @@ resources_dir = (base_dir / "resources").resolve()
 
 
 def test_init():
-    handler = FileHandler(resources_dir / "good_document.tex")
+    handler = FileHandler()
+    handler.set_path(resources_dir / "good_document.tex")
     assert type(handler) is FileHandler
 
-    handler_sym = FileHandler(resources_dir / "linked_document.tex")
+    handler_sym = FileHandler()
+    handler_sym.set_path(resources_dir / "linked_document.tex")
     assert handler_sym.file_path == resources_dir / "actual_document.tex"
 
     handler_sym.read_file()

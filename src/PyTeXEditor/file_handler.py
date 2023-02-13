@@ -4,10 +4,9 @@ from PyTeXEditor.latex_document import LatexDocument
 
 
 class FileHandler:
-    def __init__(self, file_path: Path):
+    def __init__(self):
 
         self.file_created = False
-        self.file_path = self.__resolve_file(file_path)
         self.doc = LatexDocument()
 
     def __resolve_file(self, input_path: Path) -> Path:
@@ -31,10 +30,16 @@ class FileHandler:
 
         return output_path
 
+    def set_path(self, path: Path) -> None:
+        self.file_path = self.__resolve_file(path)
+
     def read_file(self) -> None:
         with open(self.file_path, "r") as file:
             lines = file.readlines()
         self.doc.plain_text = lines
+
+    def write_file(self) -> None:
+        pass
 
     def convert(self) -> None:
         self.doc.plain_to_tex()
