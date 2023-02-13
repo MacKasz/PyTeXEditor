@@ -7,7 +7,7 @@ T = TypeVar("T")
 class Node(Generic[T]):
     __slots__ = ("id", "data", "children")
 
-    def __init__(self, id: int, data: T) -> None:
+    def __init__(self, id: object, data: T) -> None:
         self.id = id
         self.data = data
         self.children: list[Node[T]] = []
