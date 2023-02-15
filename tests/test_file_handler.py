@@ -20,7 +20,7 @@ def test_init():
 
     handler_sym.read_file()
     assert handler_sym.doc.plain_text is not None
-    handler_sym.convert()
+    handler_sym.doc.plain_to_tex()
 
     tree = handler_sym.doc.object_tree
     assert type(tree.root.data) is Document
