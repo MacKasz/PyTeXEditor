@@ -5,15 +5,21 @@ from PyTeXEditor.textedit import TextEdit
 from PyTeXEditor.file_dialog import FileDialog
 from PyTeXEditor.file_handler import FileHandler
 from PyQt6 import QtWidgets
+import logging
 
 
 class Window(QtWidgets.QWidget):
+    log = logging.getLogger("Window")
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         super().setObjectName("MainWindow")
+
         self.file_handler = FileHandler()
+
         self.file_dialog = FileDialog()
         self.file_dialog.setVisible(False)
+
         self.ui_init()
         self.show()
 
@@ -49,12 +55,15 @@ class Window(QtWidgets.QWidget):
         self.setWindowTitle("PyTeXEditor")
 
     def __open_file(self) -> None:
-        path = self.file_dialog.get_read_file()
+        path, return_code = self.file_dialog.get_read_file()
+        print(return_code)
+        if return_code != 1:
+            self.log.debug("No valid file was selecte")
+            return None
         self.file_handler.set_path(path)
         self.file_handler.read_file()
-        self.file_handler.convert()
-        for node in self.file_handler.doc.object_tree.preorder_traverse():
-            print(f"{type(node.data)}")
+        self.file_handler.doc.plain_to_tex()
+        self.textedit.setDocument(self.file_handler.doc)
 
     def hide_sidebar(self) -> None:
         self.sidebar.setVisible(False)

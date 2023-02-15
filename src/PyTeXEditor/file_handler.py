@@ -1,9 +1,12 @@
 from pathlib import Path
 from os import access, linesep, R_OK, W_OK
 from PyTeXEditor.latex_document import LatexDocument
+import logging
 
 
 class FileHandler:
+    log = logging.getLogger("FileHandler")
+
     def __init__(self):
 
         self.file_created = False
@@ -40,9 +43,6 @@ class FileHandler:
 
     def write_file(self) -> None:
         pass
-
-    def convert(self) -> None:
-        self.doc.plain_to_tex()
 
     def __write_file(self, data: list[str]) -> None:
         data = [line + linesep for line in data]
