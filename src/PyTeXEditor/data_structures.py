@@ -37,6 +37,13 @@ class Tree(Generic[U]):
         self.root = root
 
     def preorder_traverse(self) -> Generator[Node[U], None, None]:
+        """Generator to traverse the nodes in the tree, in preorder.
+
+        Yields
+        ------
+        Generator[Node[U], None, None]
+            Node of the Tree generic.
+        """
         nodes_stack: list[Node[U]] = []
         nodes_stack.append(self.root)
 
