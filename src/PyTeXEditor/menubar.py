@@ -5,7 +5,7 @@ from typing import Dict
 class Menubar(QtWidgets.QMenuBar):
     def __init__(self) -> None:
         super().__init__()
-        self.setObjectName("Menubar")
+        super().setObjectName("Menubar")
         self.__init_ui()
 
     def __init_ui(self) -> None:

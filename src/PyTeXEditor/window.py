@@ -56,9 +56,8 @@ class Window(QtWidgets.QWidget):
 
     def __open_file(self) -> None:
         path, return_code = self.file_dialog.get_read_file()
-        print(return_code)
         if return_code != 1:
-            self.log.debug("No valid file was selecte")
+            self.log.debug("No valid file was selected")
             return None
         self.file_handler.set_path(path)
         self.file_handler.read_file()

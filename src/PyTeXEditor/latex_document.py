@@ -22,9 +22,6 @@ class LatexDocument(QTextDocument):
         self.object_tree: Tree[Block]
         super().__init__()
 
-    def internal_to_qt(self) -> None:
-        pass
-
     def __process_plaintext(self) -> None:
         self.intermediate = seperate(self.plain_text)
 
@@ -39,9 +36,11 @@ class LatexDocument(QTextDocument):
 
         i = 0
         id_counter = 0
+        doc_found = False
         # Scans the intermediate to get to the begin{document} macro
         while len(self.intermediate) > i:
             if doc_begin.match(self.intermediate[i]):
+                doc_found = True
                 # Starts the tree if the document is found
                 root_object = Node[document_class](  # type: ignore
                     id_counter, document_class()
@@ -56,7 +55,7 @@ class LatexDocument(QTextDocument):
             i += 1
 
         # No document, terminate early
-        if not self.object_tree:
+        if not doc_found:
             return None
 
         # Cut to the document
@@ -135,7 +134,7 @@ class LatexDocument(QTextDocument):
             self.log.error("Importing stack not empty")
             self.log.error(f"{node_stack}")
 
-    def plain_to_tex(self) -> None:
+    def plain_to_tex(self) -> None:  # pragma: no cover
         self.__process_plaintext()
         self.__process_intermediate()
 

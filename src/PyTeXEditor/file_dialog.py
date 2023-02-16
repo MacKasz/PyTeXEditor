@@ -19,8 +19,9 @@ class FileDialog(QFileDialog):
     def __init__(self):
         super().__init__()
         self.file_handler = FileHandler()
+        super().setObjectName("FileDialog")
 
-    def get_read_file(self) -> Tuple[Path, int]:
+    def get_read_file(self) -> Tuple[Path, int]:  # pragma: no cover
 
         # Settings
         self.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
@@ -37,7 +38,7 @@ class FileDialog(QFileDialog):
 
         return Path(selected[0]).resolve(), return_value
 
-    def get_write_file(self) -> Tuple[Path, int]:
+    def get_write_file(self) -> Tuple[Path, int]:  # pragma: no cover
 
         # Settings
         self.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)

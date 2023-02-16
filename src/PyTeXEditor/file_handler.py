@@ -29,8 +29,6 @@ class FileHandler:
             if output_path.is_dir():
                 raise IsADirectoryError(f"{output_path} is a dir, not a file")
 
-            output_path.touch()
-
         return output_path
 
     def set_path(self, path: Path) -> None:
@@ -41,10 +39,8 @@ class FileHandler:
             lines = file.readlines()
         self.doc.plain_text = lines
 
-    def write_file(self) -> None:
-        pass
-
-    def __write_file(self, data: list[str]) -> None:
+    def write_file(self, data: list[str]) -> None:
+        # Add the correct line seperator
         data = [line + linesep for line in data]
 
         with open(self.file_path, "w") as file:
