@@ -59,4 +59,4 @@ def test_write():
     handler.write_file(["test1", "test2"])
 
     with open(Path(resources_dir / "write_test.tex"), 'rb') as file:
-        assert file.read().decode() == f"test1{os.linesep}test2{os.linesep}"
+        assert file.read().splitlines() == ["test1", "test2"]
