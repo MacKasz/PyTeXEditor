@@ -89,6 +89,9 @@ class Document(Environment):
     def to_plain(self) -> str:
         return ""
 
+    def to_tex(self) -> str:
+        raise NotImplementedError
+
 
 class Itemize(Environment):
     @property
@@ -104,6 +107,9 @@ class Itemize(Environment):
 
     def to_plain(self) -> str:
         return ""
+
+    def to_tex(self) -> str:
+        raise NotImplementedError
 
 
 class Item(TerminalMacro):
@@ -124,6 +130,9 @@ class Item(TerminalMacro):
     def to_plain(self) -> str:
         return self.points[0]
 
+    def to_tex(self) -> str:
+        raise NotImplementedError
+
 
 class Text(TerminalMacro):
 
@@ -140,6 +149,9 @@ class Text(TerminalMacro):
 
     def to_plain(self) -> str:
         return self.data
+
+    def to_tex(self) -> str:
+        raise NotImplementedError
 
 
 def get_env_regex(environment: str) -> Tuple[Pattern[str], Pattern[str]]:
