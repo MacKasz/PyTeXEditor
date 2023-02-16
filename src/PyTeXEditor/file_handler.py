@@ -41,7 +41,9 @@ class FileHandler:
 
     def write_file(self, data: list[str]) -> None:
         # Add the correct line seperator
-        data = [line + linesep for line in data]
+        temp_data = []
+        for line in data:
+            temp_data.append(f"{line}{linesep}")
 
         with open(self.file_path, "w") as file:
-            file.writelines(data)
+            file.writelines(temp_data)
