@@ -1,11 +1,9 @@
-from PyQt6.QtGui import QTextDocument, QTextCursor, QTextFrameFormat
+from PyQt6.QtGui import QTextDocument
 from PyTeXEditor.extract_latex import seperate
 from PyTeXEditor.data_structures import Tree, Node
 from PyTeXEditor.document_elements import (
     Block,
     get_env_regex,
-    TerminalMacro,
-    Environment,
     IncludeTerminator,
     ENVIRONMENTS,
     MACROS,
@@ -137,18 +135,3 @@ class LatexDocument(QTextDocument):
     def plain_to_tex(self) -> None:  # pragma: no cover
         self.__process_plaintext()
         self.__process_intermediate()
-
-        if not self.object_tree:
-            return
-
-        a = QTextCursor(self)
-        a.insertText("start")
-        j = QTextFrameFormat()
-        j.setBorder(2)
-        for node in self.object_tree.preorder_traverse():
-            print(type(node.data))
-            if isinstance(node.data, TerminalMacro):
-                print("a")
-                a.insertText(node.data.to_text())
-            if isinstance(node.data, Environment):
-                a.insertFrame(j)
