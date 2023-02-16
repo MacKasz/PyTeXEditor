@@ -2,13 +2,24 @@ from PyTeXEditor.menubar import Menubar
 from PyTeXEditor.ribbon import Ribbon
 from PyTeXEditor.sidebar import Sidebar
 from PyTeXEditor.textedit import TextEdit
+from PyTeXEditor.file_dialog import FileDialog
+from PyTeXEditor.file_handler import FileHandler
 from PyQt6 import QtWidgets
+import logging
 
 
 class Window(QtWidgets.QWidget):
+    log = logging.getLogger("Window")
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.setObjectName("MainWindow")
+        super().setObjectName("MainWindow")
+
+        self.file_handler = FileHandler()
+
+        self.file_dialog = FileDialog()
+        self.file_dialog.setVisible(False)
+
         self.ui_init()
         self.show()
 
@@ -18,6 +29,8 @@ class Window(QtWidgets.QWidget):
         horizontal_split = QtWidgets.QHBoxLayout()
 
         self.menubar = Menubar()
+        self.menubar.menu_actions["Open"].\
+            triggered.connect(self.__open_file)  # type: ignore
         self.ribbon = Ribbon()
         self.sidebar = Sidebar()
         self.textedit = TextEdit()
@@ -41,5 +54,15 @@ class Window(QtWidgets.QWidget):
         self.setGeometry(0, 0, 500, 300)
         self.setWindowTitle("PyTeXEditor")
 
-    def hide_sidebar(self):
+    def __open_file(self) -> None:
+        path, return_code = self.file_dialog.get_read_file()
+        if return_code != 1:
+            self.log.debug("No valid file was selected")
+            return None
+        self.file_handler.set_path(path)
+        self.file_handler.read_file()
+        self.file_handler.doc.plain_to_tex()
+        self.textedit.setDocument(self.file_handler.doc)
+
+    def hide_sidebar(self) -> None:
         self.sidebar.setVisible(False)

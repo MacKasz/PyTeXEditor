@@ -9,14 +9,15 @@ def test_object_name(qtbot):
 
 
 def test_menu_items(qtbot):
-    menu = Menubar()
-    menu_items = menu.children()[1:]
+    menubar = Menubar()
 
-    type(menu_items[0]) is QtWidgets.QMenu
-    assert menu_items[0].title() == "File"
+    menu_list = list(menubar.menus.values())
 
-    type(menu_items[1]) is QtWidgets.QMenu
-    assert menu_items[1].title() == "Edit"
+    assert type(menu_list[0]) is QtWidgets.QMenu
+    assert menu_list[0].title() == "File"
 
-    type(menu_items[2]) is QtWidgets.QMenu
-    assert menu_items[2].title() == "Run"
+    assert type(menu_list[0]) is QtWidgets.QMenu
+    assert menu_list[1].title() == "Edit"
+
+    assert type(menu_list[0]) is QtWidgets.QMenu
+    assert menu_list[2].title() == "Run"
