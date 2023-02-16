@@ -1,5 +1,5 @@
 from pathlib import Path
-from os import access, linesep, R_OK, W_OK
+from os import access, R_OK, W_OK
 from PyTeXEditor.latex_document import LatexDocument
 import logging
 
@@ -43,7 +43,7 @@ class FileHandler:
         # Add the correct line seperator
         temp_data = []
         for line in data:
-            temp_data.append(f"{line}{linesep}")
+            temp_data.append(f"{line}\n")
 
         with open(self.file_path, "w") as file:
             file.writelines(temp_data)
