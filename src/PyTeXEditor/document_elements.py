@@ -19,18 +19,47 @@ class Block(ABC):
 
     @abstractproperty
     def terminator(self) -> Pattern[str]:
+        """A regex pattern to match a terminator.
+        """
         return re.compile(r"\\")
 
     @abstractproperty
     def include_type(self) -> IncludeTerminator:
+        """Whether the terminator should be included.
+        """
         return IncludeTerminator.BEFORE
 
     @abstractmethod
     def process_data(self, data: str) -> None:
+        """Processes the dat for the element.
+
+        Parameters
+        ----------
+        data : str
+            The data to process
+        """
         pass
 
     @abstractmethod
-    def to_text(self) -> str:
+    def to_plain(self) -> str:
+        """Gives the element as plain text.
+
+        Returns
+        -------
+        str
+            The plaintext.
+        """
+        pass
+
+    @abstractmethod
+    def to_tex(self) -> str:
+        """Gives the element as LaTeX text.
+
+        Returns
+        -------
+        str
+            The LaTeX text.
+        """
         pass
 
 
@@ -57,7 +86,7 @@ class Document(Environment):
     def process_data(self, data: str) -> None:
         pass
 
-    def to_text(self) -> str:
+    def to_plain(self) -> str:
         return ""
 
 
@@ -73,7 +102,7 @@ class Itemize(Environment):
     def process_data(self, data: str) -> None:
         pass
 
-    def to_text(self) -> str:
+    def to_plain(self) -> str:
         return ""
 
 
@@ -92,7 +121,7 @@ class Item(TerminalMacro):
     def process_data(self, data: str) -> None:
         pass
 
-    def to_text(self) -> str:
+    def to_plain(self) -> str:
         return self.points[0]
 
 
@@ -109,7 +138,7 @@ class Text(TerminalMacro):
     def process_data(self, data: str) -> None:
         self.data = data
 
-    def to_text(self) -> str:
+    def to_plain(self) -> str:
         return self.data
 
 
