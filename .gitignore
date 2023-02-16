@@ -26,3 +26,7 @@ var/
 .cache
 nosetests.xml
 coverage.xml
+
+
+# Testing files
+resources/unreadable*
