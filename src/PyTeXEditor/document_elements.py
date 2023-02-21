@@ -1,7 +1,16 @@
+from PyQt6.QtGui import QTextBlockUserData
 from typing import Dict, Tuple, Pattern, Type
 from enum import Enum
 from abc import ABC, abstractmethod, abstractproperty
 import re
+
+
+class BlockData(QTextBlockUserData):
+
+    __slots__ = ["block_type"]
+
+    def __init__(self, type: Type) -> None:
+        self.block_type = type
 
 
 class IncludeTerminator(Enum):

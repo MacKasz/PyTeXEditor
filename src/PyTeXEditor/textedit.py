@@ -18,6 +18,7 @@ class TextEdit(QtWidgets.QTextEdit):
         super().setObjectName("TextEdit")
         self.setDocument(LatexDocument())
         self.__set_style()
+        self.selectionChanged.connect(self.__send_selection)
 
     def __set_style(self) -> None:
         """Sets the TextEdit style.
@@ -35,6 +36,6 @@ class TextEdit(QtWidgets.QTextEdit):
         for i in range(self.document().blockCount()):
             yield self.document().findBlock(i)
 
-    def selectionChanged(self) -> None:
-        # Update selection
-        return super().selectionChanged()
+    def __send_selection(self) -> None:
+        cursor = self.textCursor()
+        print(f"{cursor.selectionStart()} - {cursor.selectionEnd()}")

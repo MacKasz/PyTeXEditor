@@ -9,6 +9,7 @@ import logging
 
 
 class Window(QtWidgets.QWidget):
+
     log = logging.getLogger("Window")
 
     def __init__(self, *args, **kwargs) -> None:
