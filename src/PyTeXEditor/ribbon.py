@@ -2,6 +2,7 @@ from PyQt6 import QtWidgets
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtCore import Qt
 from typing import Dict
+from PyTeXEditor.icons import Icon
 
 
 class Ribbon(QWidget):
@@ -9,8 +10,10 @@ class Ribbon(QWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.setObjectName("Ribbon")
+        super().setObjectName("Ribbon")
         self.__ui_setup()
+        a = Icon("/mnt/Media/Dev/PyTeXEditor/icons/icons/0-circle-fill.svg")
+        b = a.get_icon()
 
     def __make_hline(self) -> QtWidgets.QFrame:
         hline = QtWidgets.QFrame()

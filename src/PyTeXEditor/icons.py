@@ -1,24 +1,26 @@
-from PyQt6.QtGui import QPixmap, QIcon
-from pathlib import Path
+from PyQt6.QtGui import QColor, QPixmap, QPainter
+from PyQt6.QtCore import Qt, QByteArray
 from typing import Dict
 import os
 
-
-FILE_DIR = Path(os.path.basename((os.path.realpath(__file__)))).resolve()
-BASE_DIR = FILE_DIR.parent
-ICONS_DIR = BASE_DIR / "icons/icons"
-
-if not ICONS_DIR.is_dir():
-    print("Icons folder not found, did you checkout the feathericons submodule")
+import xml.etree.ElementTree as Et
 
 
-class Icons:
+class Icon:
 
-    def __init__(self) -> None:
-        print(ICONS_DIR)
-        self.pixmap: Dict[str, QPixmap] = {
-            "list": QPixmap(str(ICONS_DIR / "list-ul.svg"))
-        }
-        self.icons: Dict[str, QIcon] = dict()
-        for name, pmap in self.pixmap.items():
-            self.icons.update({name: QIcon(pmap)})
+    def __init__(self, icon_path, color="white"):
+
+        self.tree = Et.parse(icon_path)
+        self.root = self.tree.getroot()
+
+        self._change_path_color(color)
+
+    def _change_path_color(self, color):
+        c = QColor(color)
+        paths = self.root.findall('.//{*}path')
+        for path in paths:
+            path.set('fill', c.name())
+
+    def get_QByteArray(self):
+        xmlstr = Et.tostring(self.root, encoding='utf8', method='xml')
+        return QByteArray(xmlstr)
