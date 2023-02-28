@@ -18,7 +18,6 @@ class TextEdit(QtWidgets.QTextEdit):
         super().setObjectName("TextEdit")
         self.setDocument(LatexDocument())
         self.__set_style()
-        self.selectionChanged.connect(self.__send_selection)
 
     def __set_style(self) -> None:
         """Sets the TextEdit style.

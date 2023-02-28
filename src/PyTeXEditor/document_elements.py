@@ -9,7 +9,7 @@ class BlockData(QTextBlockUserData):
 
     __slots__ = ["block_type"]
 
-    def __init__(self, type: Type) -> None:
+    def __init__(self, type: Type['Block']) -> None:
         self.block_type = type
 
 
