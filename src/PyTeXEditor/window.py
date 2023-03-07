@@ -12,6 +12,11 @@ class Window(QtWidgets.QWidget):
 
     log = logging.getLogger("Window")
 
+    def __make_hline(self) -> QtWidgets.QFrame:
+        hline = QtWidgets.QFrame()
+        hline.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        return hline
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         super().setObjectName("MainWindow")
@@ -47,7 +52,9 @@ class Window(QtWidgets.QWidget):
         vertical_split.addLayout(horizontal_split)
 
         outer_vsplit.setObjectName("OuterVSplit")
+        outer_vsplit.addWidget(self.__make_hline())
         outer_vsplit.addWidget(self.menubar)
+        outer_vsplit.addWidget(self.__make_hline())
         outer_vsplit.addLayout(vertical_split)
 
         self.setLayout(outer_vsplit)
@@ -63,7 +70,7 @@ class Window(QtWidgets.QWidget):
         self.file_handler.set_path(path)
         self.file_handler.read_file()
         self.file_handler.doc.plain_to_tex()
-        self.textedit.setDocument(self.file_handler.doc)
+        self.textedit.set_document(self.file_handler.doc)
 
     def hide_sidebar(self) -> None:
         self.sidebar.setVisible(False)
