@@ -35,6 +35,10 @@ class TextEdit(QtWidgets.QTextEdit):
         for i in range(self.document().blockCount()):
             yield self.document().findBlock(i)
 
+    def set_document(self, doc: LatexDocument) -> None:
+        doc.internal_to_qt()
+        self.setDocument(doc)
+
     def __send_selection(self) -> None:
         cursor = self.textCursor()
         print(f"{cursor.selectionStart()} - {cursor.selectionEnd()}")

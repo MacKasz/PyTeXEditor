@@ -1,8 +1,11 @@
-from PyQt6.QtGui import QTextDocument
+from PyQt6.QtGui import QTextDocument, QTextCursor, QTextFrameFormat
 from PyTeXEditor.extract_latex import seperate
 from PyTeXEditor.data_structures import Tree, Node
 from PyTeXEditor.document_elements import (
     Block,
+    Text,
+    Environment,
+    TerminalMacro,
     get_env_regex,
     IncludeTerminator,
     ENVIRONMENTS,
@@ -135,3 +138,32 @@ class LatexDocument(QTextDocument):
     def plain_to_tex(self) -> None:  # pragma: no cover
         self.__process_plaintext()
         self.__process_intermediate()
+
+    def internal_to_qt(self) -> None:
+        cursor = QTextCursor(self)
+
+        node_stack: list[Node[Block]] = [self.object_tree.root]
+
+        for node in self.object_tree.preorder_traverse():
+            print(f"{type(node.data)} {node.data.to_plain()}")
+
+        while node_stack:
+            current_node = node_stack.pop()
+            temp_child = current_node.children
+            temp_child.reverse()
+
+            if current_node.id == -1:
+                cursor.movePosition(QTextCursor.MoveOperation.NextBlock,
+                                    QTextCursor.MoveMode.MoveAnchor)
+            if isinstance(current_node.data, Environment):
+                print(f"Env: {type(current_node.data)}")
+                node_stack.append(Node(-1, Text()))
+                node_stack += temp_child
+                frame = QTextFrameFormat()
+                frame.setBorder(3)
+                cursor.insertFrame(frame)
+
+            elif isinstance(current_node.data, TerminalMacro):
+                node_stack = node_stack + current_node.children
+                cursor.insertText(current_node.data.to_plain())
+                print(f"OUT: '{current_node.data.to_plain()}'")
