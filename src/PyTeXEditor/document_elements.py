@@ -99,7 +99,7 @@ class Document(Environment):
         return ""
 
     def to_tex(self) -> str:
-        raise NotImplementedError
+        return r"\begin{document}"
 
 
 class Itemize(Environment):
@@ -118,7 +118,7 @@ class Itemize(Environment):
         return ""
 
     def to_tex(self) -> str:
-        raise NotImplementedError
+        return r"\begin{itemize}"
 
 
 class Item(TerminalMacro):
@@ -137,17 +137,17 @@ class Item(TerminalMacro):
         pass
 
     def to_plain(self) -> str:
-        return self.points[0]
+        return f"\n{self.points[0]}"
 
     def to_tex(self) -> str:
-        raise NotImplementedError
+        return r"\item "
 
 
 class Text(TerminalMacro):
 
     @property
     def terminator(self) -> Pattern[str]:
-        return re.compile(r"\\")
+        return re.compile(r".*")
 
     @property
     def include_type(self) -> IncludeTerminator:
@@ -160,7 +160,7 @@ class Text(TerminalMacro):
         return self.data
 
     def to_tex(self) -> str:
-        raise NotImplementedError
+        return self.data
 
 
 def get_env_regex(environment: str) -> Tuple[Pattern[str], Pattern[str]]:
