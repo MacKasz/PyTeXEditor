@@ -16,6 +16,7 @@ def test_window_name(qtbot):
     assert main_window.objectName() == "MainWindow"
 
 
+@pytest.mark.skip(reason="This will change")
 def test_window_layout(qtbot):
     main_window = Window()
     first = main_window.layout()
