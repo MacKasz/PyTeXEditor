@@ -128,7 +128,7 @@ class Item(TerminalMacro):
         pass
 
     def to_plain(self) -> str:
-        return f"\n{self.points[0]}"
+        return f"{self.points[0]}"
 
     def to_tex(self) -> str:
         return r"\item "
@@ -148,10 +148,10 @@ class Text(TerminalMacro):
         self.data = data
 
     def to_plain(self) -> str:
-        return self.data
+        return f"{self.data}\n"
 
     def to_tex(self) -> str:
-        return self.data
+        return f"{self.data}\n"
 
 
 def get_env_regex(environment: str) -> Tuple[Pattern[str], Pattern[str]]:
