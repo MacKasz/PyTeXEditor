@@ -16,18 +16,21 @@ class FileHandler:
         # Resolve path
         output_path = input_path.absolute()
 
+        if output_path.is_dir():
+            raise IsADirectoryError(f"{output_path} is a dir, not a file")
+
+        # Check if its a file
+        if not output_path.is_file():
+            try:
+                output_path.touch(0o664, True)
+            except Exception as e:
+                print(e)
+
         if not (access(output_path, R_OK) or access(output_path, W_OK)):
             raise PermissionError(f"{output_path} cannot be read or written to")
 
         if output_path.is_symlink():
             output_path = output_path.resolve()
-
-        # Check if its a file
-        if output_path.is_file():
-            self.file_created = True
-        else:
-            if output_path.is_dir():
-                raise IsADirectoryError(f"{output_path} is a dir, not a file")
 
         return output_path
 
@@ -39,11 +42,14 @@ class FileHandler:
             lines = file.readlines()
         self.doc.plain_text = lines
 
-    def write_file(self, data: list[str]) -> None:
-        # Add the correct line seperator
-        temp_data = []
-        for line in data:
-            temp_data.append(f"{line}\n")
+    def write_file(self) -> None:
+
+        stack = self.doc.big_brain_traverse()
 
         with open(self.file_path, "w") as file:
-            file.writelines(temp_data)
+            for node in stack:
+                if isinstance(node, str):
+                    output = r"\end{" + node + r"}" + "\n"
+                    file.write(output)
+                    continue
+                file.write(node.data.to_tex())

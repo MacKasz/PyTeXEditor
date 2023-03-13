@@ -37,6 +37,8 @@ class Window(QtWidgets.QWidget):
         self.menubar = Menubar()
         self.menubar.menu_actions["Open"].\
             triggered.connect(self.__open_file)  # type: ignore
+        self.menubar.menu_actions["Save as"].\
+            triggered.connect(self.__write_file)  # type: ignore
         self.ribbon = Ribbon()
         self.sidebar = Sidebar()
         self.textedit = TextEdit()
@@ -71,6 +73,14 @@ class Window(QtWidgets.QWidget):
         self.file_handler.read_file()
         self.file_handler.doc.plain_to_tex()
         self.textedit.set_document(self.file_handler.doc)
+
+    def __write_file(self) -> None:
+        path, return_code = self.file_dialog.get_write_file()
+        if return_code != 1:
+            self.log.debug("No valid file was selected")
+            return None
+        self.file_handler.set_path(path)
+        self.file_handler.write_file()
 
     def hide_sidebar(self) -> None:
         self.sidebar.setVisible(False)

@@ -1,6 +1,6 @@
-from typing import Dict, Tuple, Pattern, Type
+from typing import Dict, Pattern, Type
 from enum import Enum
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 import re
 
 
@@ -11,23 +11,15 @@ class IncludeTerminator(Enum):
 
 class Block(ABC):
 
-    __slots__ = ["options", "data"]
+    __slots__ = ["options", "data", "initiator", "include_type", "terminator"]
+    data: str
+    initiator: Pattern[str]
+    include_type: IncludeTerminator
+    terminator: Pattern[str]
 
     def __init__(self) -> None:
         self.options: Dict[str, str] = dict()
         self.data = ""
-
-    @abstractproperty
-    def terminator(self) -> Pattern[str]:
-        """A regex pattern to match a terminator.
-        """
-        return re.compile(r"\\")
-
-    @abstractproperty
-    def include_type(self) -> IncludeTerminator:
-        """Whether the terminator should be included.
-        """
-        return IncludeTerminator.BEFORE
 
     @abstractmethod
     def process_data(self, data: str) -> None:
@@ -65,6 +57,9 @@ class Block(ABC):
 
 class Environment(Block):
 
+    __slots__ = ["name"]
+    name: str
+
     pass
 
 
@@ -74,14 +69,10 @@ class TerminalMacro(Block):
 
 
 class Document(Environment):
-
-    @property
-    def terminator(self) -> Pattern[str]:
-        return re.compile(r"\\end\{document\}")
-
-    @property
-    def include_type(self) -> IncludeTerminator:
-        return IncludeTerminator.INCLUDE
+    name = "document"
+    initiator = re.compile(r"\\begin\{document\}")
+    include_type = IncludeTerminator.INCLUDE
+    terminator = re.compile(r"\\end\{document\}")
 
     def process_data(self, data: str) -> None:
         pass
@@ -90,17 +81,14 @@ class Document(Environment):
         return ""
 
     def to_tex(self) -> str:
-        return r"\begin{document}"
+        return r"\begin{document}" + "\n"
 
 
 class Itemize(Environment):
-    @property
-    def terminator(self) -> Pattern[str]:
-        return re.compile(r"\\end\{itemize\}")
-
-    @property
-    def include_type(self) -> IncludeTerminator:
-        return IncludeTerminator.INCLUDE
+    name = "itemize"
+    initiator = re.compile(r"\\begin\{itemize\}")
+    terminator = re.compile(r"\\end\{itemize\}")
+    include_type = IncludeTerminator.INCLUDE
 
     def process_data(self, data: str) -> None:
         pass
@@ -109,26 +97,21 @@ class Itemize(Environment):
         return ""
 
     def to_tex(self) -> str:
-        return r"\begin{itemize}"
+        return r"\begin{itemize}" + "\n"
 
 
 class Item(TerminalMacro):
 
-    points = ["•", "-", "∗", "∙"]
-
-    @property
-    def terminator(self) -> Pattern[str]:
-        return re.compile(r"\\item|\\end\{itemize\}")
-
-    @property
-    def include_type(self) -> IncludeTerminator:
-        return IncludeTerminator.BEFORE
+    __points = ["•", "-", "∗", "∙"]
+    initiator = re.compile(r"\\item")
+    terminator = re.compile(r".")
+    include_type = IncludeTerminator.INCLUDE
 
     def process_data(self, data: str) -> None:
         pass
 
     def to_plain(self) -> str:
-        return f"{self.points[0]}"
+        return f"{self.__points[0]} "
 
     def to_tex(self) -> str:
         return r"\item "
@@ -136,13 +119,9 @@ class Item(TerminalMacro):
 
 class Text(TerminalMacro):
 
-    @property
-    def terminator(self) -> Pattern[str]:
-        return re.compile(r".*")
-
-    @property
-    def include_type(self) -> IncludeTerminator:
-        return IncludeTerminator.BEFORE
+    initiator = re.compile(r"^[^\\]+$")
+    terminator = re.compile(r".*")
+    include_type = IncludeTerminator.BEFORE
 
     def process_data(self, data: str) -> None:
         self.data = data
@@ -154,19 +133,14 @@ class Text(TerminalMacro):
         return f"{self.data}\n"
 
 
-def get_env_regex(environment: str) -> Tuple[Pattern[str], Pattern[str]]:
-    begin = r"\\begin\{" + str(environment) + r"\}(?:\[.*\])*"
-    end = r"\\end\{" + str(environment) + r"\}"
-    return re.compile(begin), re.compile(end)
+# TODO make this automatic
+ENVIRONMENTS: list[Type[Environment]] = [
+    Document,
+    Itemize,
+]
 
 
-ENVIRONMENTS: Dict[str, Type[Block]] = {
-    "document": Document,
-    "itemize": Itemize,
-}
-
-
-MACROS: Dict[Type[Block], Pattern[str]] = {
-    Text: re.compile(r"^[^\\]+$"),
-    Item: re.compile(r"\\item"),
-}
+MACROS: list[Type[TerminalMacro]] = [
+    Text,
+    Item,
+]

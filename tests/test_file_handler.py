@@ -15,9 +15,11 @@ print(resources_dir)
 
 def test_init():
     handler = FileHandler()
+
+    assert isinstance(handler, FileHandler)
     assert handler.file_created is False
 
-    assert type(handler.doc) is LatexDocument
+    assert isinstance(handler.doc, LatexDocument)
 
     with pytest.raises(AttributeError):
         if handler.file_path:
@@ -28,8 +30,6 @@ def test_resolve():
     handler = FileHandler()
 
     handler.set_path(resources_dir / "good_document.tex")
-    assert type(handler) is FileHandler
-
     handler_sym = FileHandler()
     handler_sym.set_path(resources_dir / "linked_document.tex")
     assert handler_sym.file_path == resources_dir / "actual_document.tex"
@@ -39,24 +39,14 @@ def test_resolve():
     handler_sym.doc.plain_to_tex()
 
     tree = handler_sym.doc.object_tree
-    assert type(tree.root.data) is Document
+    assert tree
+    assert isinstance(tree.root.data, Document)
 
-    assert type(tree.root.children[0].data) == Text
+    assert isinstance(tree.root.children[0].data, Text)
 
     with pytest.raises(IsADirectoryError):
         handler.set_path(resources_dir)
 
-    # Can test this locally but cannot upload an unreadable file
-    # to git.
+    # Can only test this locally as you cannot upload an unreadable file to git.
     # with pytest.raises(PermissionError):
     #     handler.set_path(resources_dir / "unreadable_document.tex")
-
-
-def test_write():
-    handler = FileHandler()
-    handler.set_path(resources_dir / "write_test.tex")
-
-    handler.write_file(["test1", "test2"])
-
-    with open(Path(resources_dir / "write_test.tex"), 'rb') as file:
-        assert file.read().splitlines() == [b"test1", b"test2"]

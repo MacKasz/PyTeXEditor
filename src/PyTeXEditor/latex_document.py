@@ -1,15 +1,17 @@
+from typing import Optional, Union
+from latex import build_pdf
+from pathlib import Path
 from PyQt6.QtGui import QTextDocument, QTextCursor, QTextFrameFormat
 from PyTeXEditor.extract_latex import seperate
 from PyTeXEditor.data_structures import Tree, Node
 from PyTeXEditor.document_elements import (
     Block,
-    Text,
     Environment,
     TerminalMacro,
-    get_env_regex,
     IncludeTerminator,
     ENVIRONMENTS,
     MACROS,
+    Document
 )
 import logging
 
@@ -20,8 +22,46 @@ class LatexDocument(QTextDocument):
     def __init__(self):
         self.plain_text: list[str] = list()
         self.intermediate: list[str] = list()
-        self.object_tree: Tree[Block]
+        self.object_tree: Optional[Tree[Block]] = None
         super().__init__()
+
+    def big_brain_traverse(self, node: Optional[Node[Block]] = None
+                           ) -> list[Union[Node[Block], str]]:
+        """_summary_
+
+        Parameters
+        ----------
+        node : Node[Block] | None, optional
+            _description_, by default None
+
+        Returns
+        -------
+        list[Node[Block] | str]
+            List of nodes with the end of an environemnt shown with a string
+            with the name of the environment.
+
+        Raises
+        ------
+        RuntimeError
+            When the `object_tree` is empty.
+        TypeError
+            When a node that is neither an `Environment` or `Macro`
+        """
+        if not node:
+            if self.object_tree:
+                node = self.object_tree.root
+            else:
+                raise RuntimeError("What the")
+        if isinstance(node.data, TerminalMacro):
+            return [node]
+        if isinstance(node.data, Environment):
+            output: list[Node[Block] | str] = [node]
+            for children in node.children:
+                output += self.big_brain_traverse(children)
+
+            output.append(node.data.name)
+            return output
+        raise TypeError("What the?")
 
     def __process_plaintext(self) -> None:
         self.intermediate = seperate(self.plain_text)
@@ -32,19 +72,16 @@ class LatexDocument(QTextDocument):
             self.log.error("intermediate is empty")
             return None
 
-        document_class = ENVIRONMENTS["document"]  # type: ignore
-        doc_begin, _ = get_env_regex("document")
+        doc_begin = Document.initiator
 
         i = 0
-        id_counter = 0
-        doc_found = False
+        id_counter: int = 0
         # Scans the intermediate to get to the begin{document} macro
         while len(self.intermediate) > i:
             if doc_begin.match(self.intermediate[i]):
-                doc_found = True
                 # Starts the tree if the document is found
-                root_object = Node[document_class](  # type: ignore
-                    id_counter, document_class()
+                root_object = Node[Block](  # type: ignore
+                    id_counter, Document()
                 )
                 self.object_tree = Tree[Block](root_object)
                 root_object.data.process_data(  # type: ignore
@@ -56,7 +93,7 @@ class LatexDocument(QTextDocument):
             i += 1
 
         # No document, terminate early
-        if not doc_found:
+        if not self.object_tree:
             return None
 
         # Cut to the document
@@ -108,21 +145,22 @@ class LatexDocument(QTextDocument):
 
             current_data = self.intermediate[i]
 
-            for macro_type, regex in MACROS.items():
+            for macro_type in MACROS:
+                regex = macro_type.initiator
                 if regex.match(self.intermediate[i]):
                     self.log.debug(f"Element is {macro_type}")
-                    new_node = Node[macro_type](  # type: ignore
+                    new_node = Node[Block](  # type: ignore
                         id_counter, macro_type()
                     )
                     node_stack[-1].add_child(new_node)
                     node_stack.append(new_node)
                     # Don't add to stack
 
-            for env_name, env_type in ENVIRONMENTS.items():
-                regex, _ = get_env_regex(env_name)
+            for env_type in ENVIRONMENTS:
+                regex = env_type.initiator
                 if regex.match(self.intermediate[i]):
-                    self.log.debug(f"Element is {env_name}")
-                    new_node = Node[env_type](  # type: ignore
+                    self.log.debug(f"Element is {env_type.name}")
+                    new_node = Node[Block](  # type: ignore
                         id_counter,
                         env_type()
                     )
@@ -140,30 +178,35 @@ class LatexDocument(QTextDocument):
         self.__process_intermediate()
 
     def internal_to_qt(self) -> None:
+
+        if not self.object_tree:
+            return None
+
         cursor = QTextCursor(self)
 
-        node_stack: list[Node[Block]] = [self.object_tree.root]
+        for current_node in self.big_brain_traverse(self.object_tree.root):
 
-        for node in self.object_tree.preorder_traverse():
-            print(f"{type(node.data)} {node.data.to_plain()}")
-
-        while node_stack:
-            current_node = node_stack.pop()
-            temp_child = current_node.children
-            temp_child.reverse()
-
-            if current_node.id == -1:
+            if isinstance(current_node, str):
+                # End of environment
                 cursor.movePosition(QTextCursor.MoveOperation.NextBlock,
                                     QTextCursor.MoveMode.MoveAnchor)
+                continue
+
             if isinstance(current_node.data, Environment):
                 print(f"Env: {type(current_node.data)}")
-                node_stack.append(Node(-1, Text()))
-                node_stack += temp_child
+
+                # == TEST ==
                 frame = QTextFrameFormat()
                 frame.setBorder(3)
+                # == TEST ==
+
                 cursor.insertFrame(frame)
 
             elif isinstance(current_node.data, TerminalMacro):
-                node_stack = node_stack + current_node.children
                 cursor.insertText(current_node.data.to_plain())
                 print(f"OUT: '{current_node.data.to_plain()}'")
+
+    def compile(self, tex_path: Path) -> None:
+        pdf_name = f"{tex_path.stem}.pdf"
+        pdf_data = build_pdf(open(tex_path))
+        pdf_data.save_to(pdf_name)

@@ -6,3 +6,5 @@ pytest-cov==4.0.0
 pytest-qt==4.2.0
 pytest-xvfb==2.0.0
 mypy==0.991
+docopt==0.6.2
+latex==0.7.0
