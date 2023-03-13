@@ -80,11 +80,11 @@ class LatexDocument(QTextDocument):
         while len(self.intermediate) > i:
             if doc_begin.match(self.intermediate[i]):
                 # Starts the tree if the document is found
-                root_object = Node[Block](  # type: ignore
+                root_object = Node[Block](
                     id_counter, Document()
                 )
                 self.object_tree = Tree[Block](root_object)
-                root_object.data.process_data(  # type: ignore
+                root_object.data.process_data(
                     self.intermediate[i]
                 )
                 id_counter += 1
@@ -149,7 +149,7 @@ class LatexDocument(QTextDocument):
                 regex = macro_type.initiator
                 if regex.match(self.intermediate[i]):
                     self.log.debug(f"Element is {macro_type}")
-                    new_node = Node[Block](  # type: ignore
+                    new_node = Node[Block](
                         id_counter, macro_type()
                     )
                     node_stack[-1].add_child(new_node)
@@ -160,7 +160,7 @@ class LatexDocument(QTextDocument):
                 regex = env_type.initiator
                 if regex.match(self.intermediate[i]):
                     self.log.debug(f"Element is {env_type.name}")
-                    new_node = Node[Block](  # type: ignore
+                    new_node = Node[Block](
                         id_counter,
                         env_type()
                     )
