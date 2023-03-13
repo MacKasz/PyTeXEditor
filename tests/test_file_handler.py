@@ -3,6 +3,7 @@ from PyTeXEditor.file_handler import FileHandler
 from PyTeXEditor.document_elements import Document, Text
 from PyTeXEditor.latex_document import LatexDocument
 from pathlib import Path
+from sys import platform
 import os
 
 test_dir = Path(os.path.dirname(os.path.realpath(__file__))).resolve()
@@ -34,8 +35,13 @@ def test_make_new_file():
     assert os.access(resources_dir / "new_file", os.W_OK)
 
     handler = FileHandler()
-    with pytest.raises(PermissionError):
-        handler.set_path(Path("/file"))
+    if platform == "linux" or platform == "linux2":
+        with pytest.raises(PermissionError):
+            handler.set_path(Path("/file"))
+    if platform == "win32":
+        with pytest.raises(PermissionError):
+            handler.set_path(Path("C:/Windows/System32/file"))
+
 
 
 def test_resolve():
