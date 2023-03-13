@@ -43,7 +43,6 @@ def test_make_new_file():
             handler.set_path(Path("C:/Windows/System32/file"))
 
 
-
 def test_resolve():
     handler = FileHandler()
 
