@@ -1,11 +1,9 @@
 from pathlib import Path
 from os import access, R_OK, W_OK
 from PyTeXEditor.latex_document import LatexDocument
-import logging
 
 
 class FileHandler:
-    log = logging.getLogger("FileHandler")
 
     def __init__(self):
 

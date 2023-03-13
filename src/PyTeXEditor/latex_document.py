@@ -17,7 +17,28 @@ import logging
 
 
 class LatexDocument(QTextDocument):
-    log = logging.getLogger("LatexDocument")
+    """Document representation class.
+    Inherits from `QTextDocument`
+
+    Attributes
+    ----------
+    plain_text: list[str]
+        Plain text of the document.
+    intermediate: list[str]
+        Intermediate represnetation of the document.
+    object_tree: Tree[Node[Block]]
+        Document represented by a tree data structure of `Block` type nodes.
+
+    Methods
+    -------
+    plain_to_tex()
+        Converts from the plain text to the object tree.
+    internal_to_qt()
+        Synchronises the internal representation to the QT representation.
+    compile()
+        Compiles the document to a PDF.
+    """
+    __log = logging.getLogger("LatexDocument")
 
     def __init__(self):
         self.plain_text: list[str] = list()
@@ -69,7 +90,7 @@ class LatexDocument(QTextDocument):
     def __process_intermediate(self) -> None:
 
         if not self.intermediate:
-            self.log.error("intermediate is empty")
+            self.__log.error("intermediate is empty")
             return None
 
         doc_begin = Document.initiator
@@ -97,9 +118,9 @@ class LatexDocument(QTextDocument):
             return None
 
         # Cut to the document
-        self.log.debug(f"Cutting at {i} (length={len(self.intermediate)})")
+        self.__log.debug(f"Cutting at {i} (length={len(self.intermediate)})")
         self.intermediate = self.intermediate[(i + 1):]
-        self.log.debug(f"After cutting: length={len(self.intermediate)}")
+        self.__log.debug(f"After cutting: length={len(self.intermediate)}")
 
         # Start the stack
         node_stack: list[Node[Block]] = [self.object_tree.root]
@@ -108,12 +129,12 @@ class LatexDocument(QTextDocument):
         current_data = self.intermediate[i]
         while len(self.intermediate) > i:
 
-            self.log.debug("---")
-            self.log.debug(f"Current element: '{self.intermediate[i]}'")
+            self.__log.debug("---")
+            self.__log.debug(f"Current element: '{self.intermediate[i]}'")
 
             # Collapse terminator
             if not node_stack:
-                self.log.debug("node_stack emtpy, finish")
+                self.__log.debug("node_stack emtpy, finish")
                 break
             last_node = node_stack[-1]
             last_terminator = last_node.data.terminator
@@ -122,22 +143,22 @@ class LatexDocument(QTextDocument):
             if last_terminator:
                 if last_terminator.match(self.intermediate[i]):
 
-                    self.log.debug(f"Found terminator {last_terminator}")
+                    self.__log.debug(f"Found terminator {last_terminator}")
                     # Should the current item be included in the data?
 
                     last_include = last_node.data.include_type
 
                     if last_include == IncludeTerminator.BEFORE:
-                        self.log.debug(f"setting data {current_data}")
+                        self.__log.debug(f"setting data {current_data}")
                         last_node.data.process_data(current_data)
                         if node_stack:
                             node_stack.pop()
                         continue
 
                     elif last_include == IncludeTerminator.INCLUDE:
-                        self.log.debug("Include")
+                        self.__log.debug("Include")
                         current_data += self.intermediate[i]
-                        self.log.debug(f"setting data '{current_data}'")
+                        self.__log.debug(f"setting data '{current_data}'")
                         last_node.data.process_data(current_data)
                         if node_stack:
                             node_stack.pop()
@@ -148,7 +169,7 @@ class LatexDocument(QTextDocument):
             for macro_type in MACROS:
                 regex = macro_type.initiator
                 if regex.match(self.intermediate[i]):
-                    self.log.debug(f"Element is {macro_type}")
+                    self.__log.debug(f"Element is {macro_type}")
                     new_node = Node[Block](
                         id_counter, macro_type()
                     )
@@ -159,7 +180,7 @@ class LatexDocument(QTextDocument):
             for env_type in ENVIRONMENTS:
                 regex = env_type.initiator
                 if regex.match(self.intermediate[i]):
-                    self.log.debug(f"Element is {env_type.name}")
+                    self.__log.debug(f"Element is {env_type.name}")
                     new_node = Node[Block](
                         id_counter,
                         env_type()
@@ -170,8 +191,8 @@ class LatexDocument(QTextDocument):
             i += 1
 
         if node_stack:
-            self.log.error("Importing stack not empty")
-            self.log.error(f"{node_stack}")
+            self.__log.error("Importing stack not empty")
+            self.__log.error(f"{node_stack}")
 
     def plain_to_tex(self) -> None:  # pragma: no cover
         self.__process_plaintext()

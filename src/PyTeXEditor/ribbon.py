@@ -23,8 +23,6 @@ class Ribbon(QWidget):
         return vline
 
     def __ui_setup(self) -> None:
-        """Sets up the UI elements.
-        """
         self.buttons: Dict[str, QtWidgets.QPushButton] = dict()
         horizontal = QtWidgets.QHBoxLayout()
 

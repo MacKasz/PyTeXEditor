@@ -5,6 +5,22 @@ T = TypeVar("T")
 
 
 class Node(Generic[T]):
+    """Node generic class
+
+    Attributes
+    ----------
+    id: int
+        The id of the node.
+    data: [T]
+        The data of the node.
+    children: list[Node]
+        The children of this node.
+
+    Methods
+    -------
+    add_child(child)
+        Add a child node.
+    """
     __slots__ = ("id", "data", "children")
 
     def __init__(self, id: object, data: T) -> None:
@@ -13,6 +29,13 @@ class Node(Generic[T]):
         self.children: list[Node[T]] = []
 
     def add_child(self, child: "Node[T]") -> None:
+        """Adds a child node.
+
+        Parameters
+        ----------
+        child : Node[T]
+            The child to add.
+        """
         self.children.append(child)
 
     def __str__(self) -> str:
@@ -33,6 +56,18 @@ U = TypeVar("U")
 
 
 class Tree(Generic[U]):
+    """Tree data strcture
+
+    Attributes
+    ----------
+    root: Node
+        The root node.
+
+    Methods
+    -------
+    preorder_traverse()
+        Generator that traverses the tree in preorder order.
+    """
     def __init__(self, root: Node[U]):
         self.root = root
 

@@ -10,6 +10,28 @@ class IncludeTerminator(Enum):
 
 
 class Block(ABC):  # pragma: no cover
+    """Abstract base class for LaTeX elements
+
+    Attributes
+    ----------
+    data: str
+        The data of the element.
+    initiator: Pattern[str]
+        How the element is started.
+    include_type: IncludeTerminator
+        When ending should the terminator be included or excluded in the data.
+    terminator: Pattern[str]
+        How the element is ended.
+
+    Methods
+    -------
+    process_data(data)
+        Given data process it.
+    to_plain()
+        Returns the element as plain text.
+    to_tex()
+        Returns the element as LaTeX.
+    """
 
     __slots__ = ["options", "data", "initiator", "include_type", "terminator"]
     data: str
@@ -56,6 +78,13 @@ class Block(ABC):  # pragma: no cover
 
 
 class Environment(Block):  # pragma: no cover
+    """Inherits from Block
+
+    Attributes
+    ----------
+    name: str
+        The name of the environment.
+    """
 
     __slots__ = ["name"]
     name: str
