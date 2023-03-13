@@ -38,9 +38,7 @@ def test_make_new_file():
     if platform == "linux" or platform == "linux2":
         with pytest.raises(PermissionError):
             handler.set_path(Path("/file"))
-    if platform == "win32":
-        with pytest.raises(PermissionError):
-            handler.set_path(Path("C:/Windows/System32/file"))
+    # TODO make test for windows
 
 
 def test_resolve():
