@@ -26,6 +26,18 @@ def test_init():
             pytest.fail()
 
 
+def test_make_new_file():
+    handler = FileHandler()
+    handler.set_path(resources_dir / "new_file")
+    assert os.path.exists(resources_dir / "new_file")
+    assert os.access(resources_dir / "new_file", os.R_OK)
+    assert os.access(resources_dir / "new_file", os.W_OK)
+
+    handler = FileHandler()
+    with pytest.raises(PermissionError):
+        handler.set_path(Path("/file"))
+
+
 def test_resolve():
     handler = FileHandler()
 
@@ -47,6 +59,11 @@ def test_resolve():
     with pytest.raises(IsADirectoryError):
         handler.set_path(resources_dir)
 
+
+@pytest.mark.skip(reason="Cannot test on cloud")
+def test_permission(qtbot):
     # Can only test this locally as you cannot upload an unreadable file to git.
-    # with pytest.raises(PermissionError):
-    #     handler.set_path(resources_dir / "unreadable_document.tex")
+
+    handler = FileHandler()
+    with pytest.raises(PermissionError):
+        handler.set_path(resources_dir / "unreadable_document.tex")

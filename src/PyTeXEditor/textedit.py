@@ -1,11 +1,9 @@
 from PyTeXEditor.latex_document import LatexDocument
-from typing import Generator
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import (
     QPalette,
     QColor,
-    QTextBlock,
 )
 
 
@@ -31,14 +29,6 @@ class TextEdit(QtWidgets.QTextEdit):
                       QColor.fromRgb(0, 0, 0))
         self.setPalette(temp)
 
-    def get_blocks(self) -> Generator[QTextBlock, None, None]:
-        for i in range(self.document().blockCount()):
-            yield self.document().findBlock(i)
-
     def set_document(self, doc: LatexDocument) -> None:
         doc.internal_to_qt()
         self.setDocument(doc)
-
-    def __send_selection(self) -> None:
-        cursor = self.textCursor()
-        print(f"{cursor.selectionStart()} - {cursor.selectionEnd()}")

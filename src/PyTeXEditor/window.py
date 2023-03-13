@@ -64,7 +64,7 @@ class Window(QtWidgets.QWidget):
         self.setGeometry(0, 0, 500, 300)
         self.setWindowTitle("PyTeXEditor")
 
-    def __open_file(self) -> None:
+    def __open_file(self) -> None:  # pragma: no cover
         path, return_code = self.file_dialog.get_read_file()
         if return_code != 1:
             self.log.debug("No valid file was selected")
@@ -74,7 +74,7 @@ class Window(QtWidgets.QWidget):
         self.file_handler.doc.plain_to_tex()
         self.textedit.set_document(self.file_handler.doc)
 
-    def __write_file(self) -> None:
+    def __write_file(self) -> None:  # pragma: no cover
         path, return_code = self.file_dialog.get_write_file()
         if return_code != 1:
             self.log.debug("No valid file was selected")

@@ -51,20 +51,3 @@ class Tree(Generic[U]):
             current_node = nodes_stack.pop(0)
             nodes_stack = current_node.children + nodes_stack
             yield current_node
-
-
-if __name__ == "__main__":
-    a = Node[int](1, 1)
-    b = Node[int](2, 2)
-    c = Node[int](3, 3)
-    d = Node[int](4, 4)
-    e = Node[int](5, 5)
-    f = Node[int](6, 6)
-    tree = Tree[int](a)
-    a.add_child(b)
-    a.add_child(c)
-    b.add_child(d)
-    b.add_child(e)
-    e.add_child(f)
-    for node in tree.preorder_traverse():
-        print(node.id)

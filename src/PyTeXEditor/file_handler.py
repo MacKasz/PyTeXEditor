@@ -23,10 +23,12 @@ class FileHandler:
         if not output_path.is_file():
             try:
                 output_path.touch(0o664, True)
-            except Exception as e:
-                print(e)
+            except PermissionError as e:
+                raise e
 
-        if not (access(output_path, R_OK) or access(output_path, W_OK)):
+        # Can only test this offline
+        if not (access(output_path, R_OK) or
+                access(output_path, W_OK)):  # pragma: no cover
             raise PermissionError(f"{output_path} cannot be read or written to")
 
         if output_path.is_symlink():

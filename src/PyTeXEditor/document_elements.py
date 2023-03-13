@@ -9,7 +9,7 @@ class IncludeTerminator(Enum):
     INCLUDE = 2
 
 
-class Block(ABC):
+class Block(ABC):  # pragma: no cover
 
     __slots__ = ["options", "data", "initiator", "include_type", "terminator"]
     data: str
@@ -55,7 +55,7 @@ class Block(ABC):
         pass
 
 
-class Environment(Block):
+class Environment(Block):  # pragma: no cover
 
     __slots__ = ["name"]
     name: str
@@ -63,7 +63,7 @@ class Environment(Block):
     pass
 
 
-class TerminalMacro(Block):
+class TerminalMacro(Block):  # pragma: no cover
 
     pass
 
