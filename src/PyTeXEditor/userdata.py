@@ -6,5 +6,5 @@ class UserData(QTextBlockUserData):
 
     __slots__ = ["type"]
 
-    def __init__(self, element_type: Type):
+    def __init__(self, element_type: Type[object]):
         self.type = element_type
