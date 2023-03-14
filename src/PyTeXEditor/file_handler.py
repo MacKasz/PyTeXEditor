@@ -53,3 +53,8 @@ class FileHandler:
                     file.write(output)
                     continue
                 file.write(node.data.to_tex())
+
+    def compile_pdf(self) -> None:
+        pdf_data = self.doc.compile()
+        path = self.file_path.parent / f"{self.file_path.stem}.pdf"
+        pdf_data.save_to(path)

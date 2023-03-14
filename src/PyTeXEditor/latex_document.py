@@ -1,6 +1,6 @@
 from typing import Optional, Union
 from latex import build_pdf
-from pathlib import Path
+from data import Data
 from PyQt6.QtGui import QTextDocument, QTextCursor, QTextFrameFormat
 from PyTeXEditor.extract_latex import seperate
 from PyTeXEditor.data_structures import Tree, Node
@@ -214,7 +214,6 @@ class LatexDocument(QTextDocument):
                 continue
 
             if isinstance(current_node.data, Environment):
-                print(f"Env: {type(current_node.data)}")
 
                 # == TEST ==
                 frame = QTextFrameFormat()
@@ -225,9 +224,29 @@ class LatexDocument(QTextDocument):
 
             elif isinstance(current_node.data, TerminalMacro):
                 cursor.insertText(current_node.data.to_plain())
-                print(f"OUT: '{current_node.data.to_plain()}'")
 
-    def compile(self, tex_path: Path) -> None:
-        pdf_name = f"{tex_path.stem}.pdf"
-        pdf_data = build_pdf(open(tex_path))
-        pdf_data.save_to(pdf_name)
+    def get_tex(self) -> list[str]:
+        output: list[str] = list()
+        output.append(r"\documentclass{article}")
+        stack = self.big_brain_traverse()
+
+        for node in stack:
+            if isinstance(node, str):
+                output.append(r"\end{" + node + r"}" + "\n")
+                continue
+            output.append(node.data.to_tex())
+
+        return output
+
+    def compile(self) -> Data:
+        """Compiles the LaTeX into a PDF and returns the data.
+
+        Returns
+        -------
+        Data
+            That PDF data (Use `Data.save_to(file)` to save the data)
+        """
+        tex_data = self.get_tex()
+        tex_data = "".join(tex_data)
+        pdf_data: Data = build_pdf(tex_data)
+        return pdf_data

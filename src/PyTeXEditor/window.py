@@ -39,6 +39,8 @@ class Window(QtWidgets.QWidget):
             triggered.connect(self.__open_file)  # type: ignore
         self.menubar.menu_actions["Save as"].\
             triggered.connect(self.__write_file)  # type: ignore
+        self.menubar.menu_actions["Compile"].\
+            triggered.connect(self.file_handler.compile_pdf)
         self.ribbon = Ribbon()
         self.sidebar = Sidebar()
         self.textedit = TextEdit()
