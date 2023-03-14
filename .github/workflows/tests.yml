@@ -23,6 +23,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
+        sudo apt install -y texlive-collection-basic
     - name: setup ${{ matrix.os }}
       uses: tlambert03/setup-qt-libs@v1
     - name: Test with tox
@@ -43,5 +44,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
+    - name: Chocolatey Action
+      uses: crazy-max/ghaction-chocolatey@v2.1.0
+      with:
+        args: install miktex -y
     - name: Test with tox
       run: tox
