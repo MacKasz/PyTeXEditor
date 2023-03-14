@@ -47,6 +47,6 @@ jobs:
     - name: Chocolatey Action
       uses: crazy-max/ghaction-chocolatey@v2.1.0
       with:
-        args: install miktex -y
+        args: install texlive -y
     - name: Test with tox
       run: tox
