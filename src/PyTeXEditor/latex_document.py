@@ -11,7 +11,7 @@ from PyTeXEditor.document_elements import (
     IncludeTerminator,
     ENVIRONMENTS,
     MACROS,
-    Document
+    Document,
 )
 import logging
 
@@ -193,9 +193,11 @@ class LatexDocument(QTextDocument):
         if node_stack:
             self.__log.error("Importing stack not empty")
             self.__log.error(f"{node_stack}")
+            raise RuntimeError
 
     def plain_to_tex(self) -> None:  # pragma: no cover
         self.__process_plaintext()
+        print(self.intermediate)
         self.__process_intermediate()
 
     def internal_to_qt(self) -> None:
@@ -226,6 +228,10 @@ class LatexDocument(QTextDocument):
                 cursor.insertText(current_node.data.to_plain())
 
     def get_tex(self) -> list[str]:
+
+        if not self.object_tree:
+            raise RuntimeError
+
         output: list[str] = list()
         output.append(r"\documentclass{article}")
         stack = self.big_brain_traverse()
