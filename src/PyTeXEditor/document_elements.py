@@ -159,7 +159,7 @@ class Text(TerminalMacro):
         return f"{self.data}\n"
 
     def to_tex(self) -> str:
-        return f"{self.data}\n"
+        return f"{self.data}\n\n"
 
 
 # TODO make this automatic
