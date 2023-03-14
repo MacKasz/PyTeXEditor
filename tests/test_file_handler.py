@@ -7,11 +7,8 @@ from sys import platform
 import os
 
 test_dir = Path(os.path.dirname(os.path.realpath(__file__))).resolve()
-print(test_dir)
 base_dir = test_dir.parent.resolve()
-print(base_dir)
 resources_dir = (base_dir / "resources").resolve()
-print(resources_dir)
 
 
 def test_init():
@@ -47,7 +44,7 @@ def test_resolve():
     handler.set_path(resources_dir / "good_document.tex")
     handler_sym = FileHandler()
     handler_sym.set_path(resources_dir / "linked_document.tex")
-    assert handler_sym.file_path == resources_dir / "actual_document.tex"
+    assert handler_sym.file_path == resources_dir / "simple_document.tex"
 
     handler_sym.read_file()
     assert handler_sym.doc.plain_text is not None
