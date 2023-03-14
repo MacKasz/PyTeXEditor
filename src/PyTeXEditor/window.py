@@ -40,7 +40,7 @@ class Window(QtWidgets.QWidget):
         self.menubar.menu_actions["Save as"].\
             triggered.connect(self.__write_file)  # type: ignore
         self.menubar.menu_actions["Compile"].\
-            triggered.connect(self.file_handler.compile_pdf)
+            triggered.connect(self.file_handler.compile_pdf)  # type: ignore
         self.ribbon = Ribbon()
         self.sidebar = Sidebar()
         self.textedit = TextEdit()

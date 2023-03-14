@@ -247,6 +247,5 @@ class LatexDocument(QTextDocument):
             That PDF data (Use `Data.save_to(file)` to save the data)
         """
         tex_data = self.get_tex()
-        tex_data = "".join(tex_data)
-        pdf_data: Data = build_pdf(tex_data)
+        pdf_data: Data = build_pdf("".join(tex_data))
         return pdf_data
