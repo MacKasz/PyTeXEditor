@@ -1,6 +1,6 @@
 from typing import Optional, Union
 from latex import build_pdf
-from pathlib import Path
+from data import Data
 from PyQt6.QtGui import QTextDocument, QTextCursor, QTextFrameFormat
 from PyTeXEditor.extract_latex import seperate
 from PyTeXEditor.data_structures import Tree, Node
@@ -11,13 +11,34 @@ from PyTeXEditor.document_elements import (
     IncludeTerminator,
     ENVIRONMENTS,
     MACROS,
-    Document
+    Document,
 )
 import logging
 
 
 class LatexDocument(QTextDocument):
-    log = logging.getLogger("LatexDocument")
+    """Document representation class.
+    Inherits from `QTextDocument`
+
+    Attributes
+    ----------
+    plain_text: list[str]
+        Plain text of the document.
+    intermediate: list[str]
+        Intermediate represnetation of the document.
+    object_tree: Tree[Node[Block]]
+        Document represented by a tree data structure of `Block` type nodes.
+
+    Methods
+    -------
+    plain_to_tex()
+        Converts from the plain text to the object tree.
+    internal_to_qt()
+        Synchronises the internal representation to the QT representation.
+    compile()
+        Compiles the document to a PDF.
+    """
+    __log = logging.getLogger("LatexDocument")
 
     def __init__(self):
         self.plain_text: list[str] = list()
@@ -69,7 +90,7 @@ class LatexDocument(QTextDocument):
     def __process_intermediate(self) -> None:
 
         if not self.intermediate:
-            self.log.error("intermediate is empty")
+            self.__log.error("intermediate is empty")
             return None
 
         doc_begin = Document.initiator
@@ -97,9 +118,9 @@ class LatexDocument(QTextDocument):
             return None
 
         # Cut to the document
-        self.log.debug(f"Cutting at {i} (length={len(self.intermediate)})")
+        self.__log.debug(f"Cutting at {i} (length={len(self.intermediate)})")
         self.intermediate = self.intermediate[(i + 1):]
-        self.log.debug(f"After cutting: length={len(self.intermediate)}")
+        self.__log.debug(f"After cutting: length={len(self.intermediate)}")
 
         # Start the stack
         node_stack: list[Node[Block]] = [self.object_tree.root]
@@ -108,12 +129,12 @@ class LatexDocument(QTextDocument):
         current_data = self.intermediate[i]
         while len(self.intermediate) > i:
 
-            self.log.debug("---")
-            self.log.debug(f"Current element: '{self.intermediate[i]}'")
+            self.__log.debug("---")
+            self.__log.debug(f"Current element: '{self.intermediate[i]}'")
 
             # Collapse terminator
             if not node_stack:
-                self.log.debug("node_stack emtpy, finish")
+                self.__log.debug("node_stack emtpy, finish")
                 break
             last_node = node_stack[-1]
             last_terminator = last_node.data.terminator
@@ -122,22 +143,22 @@ class LatexDocument(QTextDocument):
             if last_terminator:
                 if last_terminator.match(self.intermediate[i]):
 
-                    self.log.debug(f"Found terminator {last_terminator}")
+                    self.__log.debug(f"Found terminator {last_terminator}")
                     # Should the current item be included in the data?
 
                     last_include = last_node.data.include_type
 
                     if last_include == IncludeTerminator.BEFORE:
-                        self.log.debug(f"setting data {current_data}")
+                        self.__log.debug(f"setting data {current_data}")
                         last_node.data.process_data(current_data)
                         if node_stack:
                             node_stack.pop()
                         continue
 
                     elif last_include == IncludeTerminator.INCLUDE:
-                        self.log.debug("Include")
+                        self.__log.debug("Include")
                         current_data += self.intermediate[i]
-                        self.log.debug(f"setting data '{current_data}'")
+                        self.__log.debug(f"setting data '{current_data}'")
                         last_node.data.process_data(current_data)
                         if node_stack:
                             node_stack.pop()
@@ -148,7 +169,7 @@ class LatexDocument(QTextDocument):
             for macro_type in MACROS:
                 regex = macro_type.initiator
                 if regex.match(self.intermediate[i]):
-                    self.log.debug(f"Element is {macro_type}")
+                    self.__log.debug(f"Element is {macro_type}")
                     new_node = Node[Block](
                         id_counter, macro_type()
                     )
@@ -159,7 +180,7 @@ class LatexDocument(QTextDocument):
             for env_type in ENVIRONMENTS:
                 regex = env_type.initiator
                 if regex.match(self.intermediate[i]):
-                    self.log.debug(f"Element is {env_type.name}")
+                    self.__log.debug(f"Element is {env_type.name}")
                     new_node = Node[Block](
                         id_counter,
                         env_type()
@@ -170,11 +191,13 @@ class LatexDocument(QTextDocument):
             i += 1
 
         if node_stack:
-            self.log.error("Importing stack not empty")
-            self.log.error(f"{node_stack}")
+            self.__log.error("Importing stack not empty")
+            self.__log.error(f"{node_stack}")
+            raise RuntimeError
 
     def plain_to_tex(self) -> None:  # pragma: no cover
         self.__process_plaintext()
+        print(self.intermediate)
         self.__process_intermediate()
 
     def internal_to_qt(self) -> None:
@@ -193,7 +216,6 @@ class LatexDocument(QTextDocument):
                 continue
 
             if isinstance(current_node.data, Environment):
-                print(f"Env: {type(current_node.data)}")
 
                 # == TEST ==
                 frame = QTextFrameFormat()
@@ -204,9 +226,32 @@ class LatexDocument(QTextDocument):
 
             elif isinstance(current_node.data, TerminalMacro):
                 cursor.insertText(current_node.data.to_plain())
-                print(f"OUT: '{current_node.data.to_plain()}'")
 
-    def compile(self, tex_path: Path) -> None:
-        pdf_name = f"{tex_path.stem}.pdf"
-        pdf_data = build_pdf(open(tex_path))
-        pdf_data.save_to(pdf_name)
+    def get_tex(self) -> list[str]:
+
+        if not self.object_tree:
+            raise RuntimeError
+
+        output: list[str] = list()
+        output.append(r"\documentclass{article}")
+        stack = self.big_brain_traverse()
+
+        for node in stack:
+            if isinstance(node, str):
+                output.append(r"\end{" + node + r"}" + "\n")
+                continue
+            output.append(node.data.to_tex())
+
+        return output
+
+    def compile(self) -> Data:
+        """Compiles the LaTeX into a PDF and returns the data.
+
+        Returns
+        -------
+        Data
+            That PDF data (Use `Data.save_to(file)` to save the data)
+        """
+        tex_data = self.get_tex()
+        pdf_data: Data = build_pdf("".join(tex_data))
+        return pdf_data

@@ -5,16 +5,26 @@ from pathlib import Path
 from PyTeXEditor.file_handler import FileHandler
 from PyTeXEditor.latex_document import LatexDocument
 import logging
-import os
 
 
 class FileDialog(QFileDialog):
+    """Extension of `QFileDialog`
 
-    log = logging.getLogger("FileDialog")
+    Signals
+    -------
+    sidebar_visable_signal()
+
+    Methods
+    -------
+    get_read_file()
+        Gets the path of a file to read, and the dialog code.
+    get_write_file()
+        Gets the path of a file to write, and the dialog code.
+    """
+
+    __log = logging.getLogger("FileDialog")
 
     sidebar_visable_signal = pyqtSignal(LatexDocument)
-
-    user_dir = Path(os.path.expanduser('~user'))
 
     def __init__(self):
         super().__init__()
@@ -22,6 +32,15 @@ class FileDialog(QFileDialog):
         super().setObjectName("FileDialog")
 
     def get_read_file(self) -> Tuple[Path, int]:  # pragma: no cover
+        """Using the OS's native file dialog retrieves a path for reading
+        a file.
+
+        Returns
+        -------
+        Tuple[Path, int]
+            Returns the path of the file and the return code.
+            (1 = Accepted, 0 = Rejected)
+        """
 
         # Settings
         self.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
@@ -33,12 +52,21 @@ class FileDialog(QFileDialog):
         return_value = self.exec()
         selected = self.selectedFiles()
         if len(selected) != 1:
-            self.log.error(f"FileDialog expected 1 item,\
+            self.__log.error(f"FileDialog expected 1 item,\
                     got {len(selected)} (taking 1st item)")
 
         return Path(selected[0]).resolve(), return_value
 
     def get_write_file(self) -> Tuple[Path, int]:  # pragma: no cover
+        """Using the OS's native file dialog retrieves a path for writing
+        a file.
+
+        Returns
+        -------
+        Tuple[Path, int]
+            Returns the path of the file and the return code.
+            (1 = Accepted, 0 = Rejected)
+        """
 
         # Settings
         self.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
@@ -52,6 +80,6 @@ class FileDialog(QFileDialog):
         return_value = self.exec()
         selected = self.selectedFiles()
         if len(selected) != 1:
-            self.log.error(f"FileDialog expected 1 item,\
+            self.__log.error(f"FileDialog expected 1 item,\
                     got {len(selected)} (taking 1st item)")
         return Path(selected[0]).resolve(), return_value

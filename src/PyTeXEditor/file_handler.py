@@ -1,11 +1,9 @@
 from pathlib import Path
 from os import access, R_OK, W_OK
 from PyTeXEditor.latex_document import LatexDocument
-import logging
 
 
 class FileHandler:
-    log = logging.getLogger("FileHandler")
 
     def __init__(self):
 
@@ -55,3 +53,8 @@ class FileHandler:
                     file.write(output)
                     continue
                 file.write(node.data.to_tex())
+
+    def compile_pdf(self) -> None:
+        pdf_data = self.doc.compile()
+        path = self.file_path.parent / f"{self.file_path.stem}.pdf"
+        pdf_data.save_to(path)
