@@ -46,5 +46,8 @@ jobs:
         pip install tox tox-gh-actions
     - name: Setup TeX Live
       uses: teatimeguest/setup-texlive-action@v2
+      with:
+        packages: >-
+        scheme-basic
     - name: Test with tox
       run: tox
