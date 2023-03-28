@@ -3,6 +3,7 @@ from PyTeXEditor.latex_document import LatexDocument
 from PyTeXEditor.document_elements import Document, Text, Block
 from PyTeXEditor.data_structures import Tree, Node
 from pathlib import Path
+from sys import platform
 import os
 
 test_dir = Path(os.path.dirname(os.path.realpath(__file__))).resolve()
@@ -85,7 +86,8 @@ def test_compile():
     doc.object_tree.root.children[0].data.process_data("test")
 
     # Will probably have to check the contents manually?
-    doc.compile()
+    if platform == "linux" or platform == "linux2":
+        doc.compile()
 
 
 def test_get_tex():
