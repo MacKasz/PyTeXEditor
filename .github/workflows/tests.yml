@@ -44,9 +44,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
-    - name: Chocolatey Action
-      uses: crazy-max/ghaction-chocolatey@v2.1.0
-      with:
-        args: install texlive -y
+    - name: Setup TeXLive
+      uses: DanySK/setup-texlive-action@0.1.1
     - name: Test with tox
       run: tox
