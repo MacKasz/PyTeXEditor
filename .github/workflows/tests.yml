@@ -44,7 +44,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
-    - name: Setup TeXLive
-      uses: DanySK/setup-texlive-action@0.1.1
+    - name: Setup TeX Live
+      uses: teatimeguest/setup-texlive-action@v2
     - name: Test with tox
       run: tox
