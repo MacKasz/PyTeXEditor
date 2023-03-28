@@ -49,5 +49,6 @@ jobs:
       with:
         packages:
           scheme-basic
+        update-all-packages: true
     - name: Test with tox
       run: tox
