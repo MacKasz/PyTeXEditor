@@ -2,6 +2,15 @@ from typing import Dict, Pattern, Type
 from enum import Enum
 from abc import ABC, abstractmethod
 import re
+import sys
+import inspect
+
+
+class ElementProperties(Enum):
+    FontFamily = 1
+    FontSize = 2
+    Styled = 3
+    Heading = 4
 
 
 class IncludeTerminator(Enum):
@@ -33,11 +42,13 @@ class Block(ABC):  # pragma: no cover
         Returns the element as LaTeX.
     """
 
-    __slots__ = ["options", "data", "initiator", "include_type", "terminator"]
+    __slots__ = ["options", "data", "initiator", "include_type", "terminator",
+                 "properties"]
     data: str
     initiator: Pattern[str]
     include_type: IncludeTerminator
     terminator: Pattern[str]
+    properties: list[ElementProperties]
 
     def __init__(self) -> None:
         self.options: Dict[str, str] = dict()
@@ -102,6 +113,7 @@ class Document(Environment):
     initiator = re.compile(r"\\begin\{document\}")
     include_type = IncludeTerminator.INCLUDE
     terminator = re.compile(r"\\end\{document\}")
+    properties = []
 
     def process_data(self, data: str) -> None:
         pass
@@ -118,6 +130,7 @@ class Itemize(Environment):
     initiator = re.compile(r"\\begin\{itemize\}")
     terminator = re.compile(r"\\end\{itemize\}")
     include_type = IncludeTerminator.INCLUDE
+    properties = []
 
     def process_data(self, data: str) -> None:
         pass
@@ -135,6 +148,7 @@ class Item(TerminalMacro):
     initiator = re.compile(r"\\item")
     terminator = re.compile(r".")
     include_type = IncludeTerminator.INCLUDE
+    properties = []
 
     def process_data(self, data: str) -> None:
         pass
@@ -151,6 +165,9 @@ class Text(TerminalMacro):
     initiator = re.compile(r"^[^\\]+$")
     terminator = re.compile(r".*")
     include_type = IncludeTerminator.BEFORE
+    properties = [ElementProperties.FontFamily,
+                  ElementProperties.FontSize,
+                  ElementProperties.Styled]
 
     def process_data(self, data: str) -> None:
         self.data = data
@@ -162,14 +179,13 @@ class Text(TerminalMacro):
         return f"{self.data}\n\n"
 
 
-# TODO make this automatic
-ENVIRONMENTS: list[Type[Environment]] = [
-    Document,
-    Itemize,
-]
+ENVIRONMENTS: list[Type[Environment]] = []
+MACROS: list[Type[TerminalMacro]] = []
 
 
-MACROS: list[Type[TerminalMacro]] = [
-    Text,
-    Item,
-]
+for name, full_class in inspect.getmembers(sys.modules[__name__],
+                                           inspect.isclass):
+    if TerminalMacro in full_class.mro() and full_class != TerminalMacro:
+        MACROS.append(full_class)
+    elif Environment in full_class.mro() and full_class != Environment:
+        ENVIRONMENTS.append(full_class)

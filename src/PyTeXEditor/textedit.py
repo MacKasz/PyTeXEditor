@@ -1,9 +1,13 @@
+from typing import Tuple, Type
 from PyTeXEditor.latex_document import LatexDocument
+from PyTeXEditor.document_elements import Block, Text
+from PyTeXEditor.userdata import UserData
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import (
     QPalette,
     QColor,
+    QTextCursor
 )
 
 
@@ -32,3 +36,16 @@ class TextEdit(QtWidgets.QTextEdit):
     def set_document(self, doc: LatexDocument) -> None:
         doc.internal_to_qt()
         self.setDocument(doc)
+
+    def get_selected_element(self) -> Tuple[QTextCursor, Type[Block]]:
+        cursor = self.textCursor()
+        block = cursor.block()
+        userdata = block.userData()
+        if not userdata:
+            block_type: Type[Block] = Text
+        else:
+            if not isinstance(userdata, UserData):
+                raise TypeError()
+            block_type = userdata.type
+
+        return (cursor, block_type)

@@ -206,6 +206,8 @@ class LatexDocument(QTextDocument):
             return None
 
         cursor = QTextCursor(self)
+        cursor.select(QTextCursor.SelectionType.Document)
+        cursor.removeSelectedText()
 
         for current_node in self.big_brain_traverse(self.object_tree.root):
 
