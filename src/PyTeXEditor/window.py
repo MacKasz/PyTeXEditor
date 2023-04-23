@@ -34,16 +34,23 @@ class Window(QtWidgets.QWidget):
         vertical_split = QtWidgets.QVBoxLayout()
         horizontal_split = QtWidgets.QHBoxLayout()
 
-        self.menubar = Menubar()
-        self.menubar.menu_actions["Open"].\
-            triggered.connect(self.__open_file)  # type: ignore
-        self.menubar.menu_actions["Save as"].\
-            triggered.connect(self.__write_file)  # type: ignore
-        self.menubar.menu_actions["Compile"].\
-            triggered.connect(self.file_handler.compile_pdf)  # type: ignore
         self.ribbon = Ribbon()
         self.sidebar = Sidebar()
         self.textedit = TextEdit()
+
+        self.menubar = Menubar()
+        self.menubar.menu_actions["Open"].triggered.\
+            connect(self.__open_file)  # type: ignore
+        self.menubar.menu_actions["Save as"].triggered.\
+            connect(self.__write_file)  # type: ignore
+        self.menubar.menu_actions["Compile"].triggered.\
+            connect(self.file_handler.compile_pdf)  # type: ignore
+        self.menubar.menu_actions["Test"].triggered.\
+            connect(self.textedit.get_selected_element)  # type: ignore
+        self.textedit.selectionChanged.\
+            connect(lambda:  # type: ignore
+                    self.sidebar.recieve_selection(
+                        *self.textedit.get_selected_element()))
 
         self.textedit.sidebar_visable_signal.connect(self.hide_sidebar)
 

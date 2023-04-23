@@ -44,3 +44,4 @@ class Menubar(QtWidgets.QMenuBar):
         self.addMenu(run)
 
         self.menu_actions.update({"Compile": run.addAction("Compile")})
+        self.menu_actions.update({"Test": run.addAction("Test")})
