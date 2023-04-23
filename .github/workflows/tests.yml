@@ -44,11 +44,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
-    - name: Setup TeX Live
-      uses: teatimeguest/setup-texlive-action@v2
-      with:
-        packages:
-          scheme-basic
-        update-all-packages: true
+    # - name: Setup TeX Live
+    #   uses: teatimeguest/setup-texlive-action@v2
+    #   with:
+    #     packages:
+    #       scheme-basic
+    #     update-all-packages: true
     - name: Test with tox
       run: tox
